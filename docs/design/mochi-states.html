@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mochi AI — Phase 3 v1.2 · 33 Character & AI States</title>
+  <style>
+    :root {
+      --bg-dark: #0b0c10;
+      --bg-panel: #13151c;
+      --bg-card: #181b24;
+      --border-subtle: rgba(255, 255, 255, 0.09);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #3898ff;
+      --amber: #f59e0b;
+      --emerald: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1380px;
+      margin: 0 auto;
+    }
+
+    /* Top Fidelity Disclosure Banner (Requested in Prompt 3b) */
+    .fidelity-note {
+      background: rgba(56, 152, 255, 0.08);
+      border: 1px solid rgba(56, 152, 255, 0.28);
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+    }
+
+    .fidelity-note strong {
+      color: #fff;
+    }
+
+    .fidelity-note ul {
+      margin-top: 6px;
+      padding-right: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 4px 18px;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding-bottom: 16px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    header h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.86rem;
+    }
+
+    .top-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .toggle-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 7px 13px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .toggle-pill input {
+      accent-color: var(--accent);
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+    }
+
+    .toggle-pill:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Main Showcase Layout */
+    .showcase-layout {
+      display: grid;
+      grid-template-columns: 1.05fr 1.15fr;
+      gap: 22px;
+      margin-bottom: 36px;
+    }
+
+    @media (max-width: 980px) {
+      .showcase-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stage-card {
+      background: radial-gradient(circle at 50% 45%, #1e2230 0%, #0d0f14 75%);
+      border: 1px solid var(--border-subtle);
+      border-radius: 22px;
+      min-height: 490px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 24px;
+    }
+
+    .stage-hud {
+      position: absolute;
+      top: 16px;
+      right: 18px;
+      left: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+      font-size: 0.76rem;
+    }
+
+    .hud-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .badge-status {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--border-subtle);
+      padding: 4px 10px;
+      border-radius: 999px;
+      color: #e2e8f0;
+      font-family: monospace;
+      direction: ltr;
+    }
+
+    .fps-badge {
+      border-color: rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      font-weight: 700;
+    }
+
+    /* Separate Non-Character Mic Hardware Indicator (For architectural clarity) */
+    .external-mic-pill {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 4px 11px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+    }
+
+    .mic-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #64748b;
+    }
+
+    .external-mic-pill[data-mic="active"] .mic-dot {
+      background: #3898ff;
+      box-shadow: 0 0 8px #3898ff;
+    }
+
+    .external-mic-pill[data-mic="prompt"] .mic-dot {
+      background: #f59e0b;
+    }
+
+    /* Main Stage Mochi Wrapper & Compact Mode Simulation */
+    .stage-mochi-wrapper {
+      width: 310px;
+      height: 282px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: width 280ms cubic-bezier(0.22, 1, 0.36, 1), height 280ms cubic-bezier(0.22, 1, 0.36, 1);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body.compact-preview .stage-mochi-wrapper {
+      width: 96px;
+      height: 88px;
+    }
+
+    /* Simulated In-App Caption / Overlay Card below Mochi */
+    .stage-caption-box {
+      margin-top: 10px;
+      min-height: 36px;
+      max-width: 88%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 7px 14px;
+      font-size: 0.84rem;
+      color: #e2e8f0;
+      text-align: center;
+      transition: opacity 0.2s;
+    }
+
+    .stage-footer {
+      position: absolute;
+      bottom: 14px;
+      right: 18px;
+      left: 18px;
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Controls Card */
+    .controls-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 22px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .controls-section-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .state-buttons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+      gap: 7px;
+    }
+
+    .state-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 7px 9px;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      text-align: right;
+      cursor: pointer;
+      transition: all 0.14s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .state-btn span.en {
+      font-family: monospace;
+      font-size: 0.69rem;
+      color: var(--text-muted);
+      direction: ltr;
+      text-align: left;
+    }
+
+    .state-btn:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .state-btn.active {
+      background: rgba(56, 152, 255, 0.16);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent) inset;
+    }
+
+    .notif-buttons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+      gap: 7px;
+    }
+
+    .notif-btn {
+      background: rgba(245, 158, 11, 0.07);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      color: #fde68a;
+      padding: 7px 9px;
+      border-radius: 10px;
+      font-size: 0.76rem;
+      text-align: right;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .notif-btn span.en {
+      font-family: monospace;
+      font-size: 0.68rem;
+      color: #fbbf24;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .notif-btn:hover, .notif-btn.active {
+      background: rgba(245, 158, 11, 0.18);
+      border-color: var(--amber);
+    }
+
+    .micro-buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .micro-btn {
+      background: #202532;
+      border: 1px solid var(--border-subtle);
+      color: #cbd5e1;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .micro-btn:hover {
+      background: #2b3244;
+      color: #fff;
+    }
+
+    .audio-slider-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 10px 14px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .audio-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .audio-slider-row input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* All States Side-by-Side Grid */
+    .grid-section {
+      margin-bottom: 36px;
+    }
+
+    .grid-section h2 {
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .states-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+      gap: 14px;
+    }
+
+    .grid-cell {
+      background: radial-gradient(circle at 50% 42%, #1c202c 0%, #101218 78%);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .grid-cell {
+      width: 100%;
+      font: inherit;
+      color: inherit;
+      text-align: center;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .grid-cell:hover {
+      border-color: rgba(56, 152, 255, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .grid-cell:focus-visible,
+    .state-btn:focus-visible,
+    .notif-btn:focus-visible,
+    .micro-btn:focus-visible,
+    #main-mochi-container:focus-visible,
+    .toggle-pill input:focus-visible,
+    input[type="range"]:focus-visible {
+      outline: 3px solid #60a5fa;
+      outline-offset: 3px;
+    }
+
+    /* Static, low-cost state thumbnails: only the main stage animates. */
+    .grid-cell .mochi-float-group,
+    .grid-cell .mochi-floor-shadow,
+    .grid-cell .mochi-ripple-ring,
+    .grid-cell .mochi-orbit-ring,
+    .grid-cell .particle-dot,
+    .grid-cell .badge-dot-1,
+    .grid-cell .badge-dot-2,
+    .grid-cell .badge-dot-3 {
+      animation: none !important;
+    }
+
+    .grid-cell .mochi-particles-group,
+    .grid-cell .mochi-badge-group,
+    .grid-cell .mochi-hands-group,
+    .grid-cell .mochi-ripple-ring,
+    .grid-cell .mochi-orbit-ring {
+      opacity: 0 !important;
+    }
+
+    #main-mochi-container:focus { outline-offset: 6px; }
+
+    .grid-cell-viewport {
+      width: 170px;
+      height: 155px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .grid-cell-meta {
+      width: 100%;
+      margin-top: 6px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.78rem;
+    }
+
+    .grid-cell-meta .ar-name {
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .grid-cell-meta .en-code {
+      font-family: monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      direction: ltr;
+    }
+
+    /* ==========================================================================
+       MOCHI CHARACTER SVG + CSS ENGINE (Pure SVG + CSS, 60fps Target)
+       ========================================================================== */
+    .mochi-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      --glow-opacity: 0.08;
+      --blush-opacity: 0.12;
+      --badge-opacity: 0;
+      --badge-scale: 0.5;
+      --hands-opacity: 0;
+      --orbit-opacity: 0;
+      --ripple-opacity: 0;
+      --particles-opacity: 0;
+      --breath-duration: 4s;
+      --audio-level: 0;
+    }
+
+    .mochi-float-group,
+    .mochi-pose-group,
+    .mochi-face-group,
+    .mochi-eye-left,
+    .mochi-eye-right,
+    .mochi-blush-group,
+    .mochi-hands-group,
+    .mochi-badge-group,
+    .mochi-ambient-glow,
+    .mochi-floor-shadow {
+      transition:
+        transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 300ms ease;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    @keyframes mochiFloat {
+      0%, 100% { transform: translate3d(0, 0px, 0) scale(1, 1); }
+      50% { transform: translate3d(0, -6px, 0) scale(1.018, 0.985); }
+    }
+
+    @keyframes mochiFloatCompact {
+      0%, 100% { transform: translate3d(0, 0px, 0) scale(1, 1); }
+      50% { transform: translate3d(0, -2.5px, 0) scale(1.01, 0.99); }
+    }
+
+    @keyframes shadowPulse {
+      0%, 100% { transform: scale(1); opacity: 0.48; }
+      50% { transform: scale(0.88); opacity: 0.32; }
+    }
+
+    @keyframes badgeDotsPulse {
+      0%, 100% { opacity: 0.35; transform: scale(0.88); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+
+    @keyframes rippleWave {
+      0% { transform: scale(0.86); opacity: 0.45; }
+      100% { transform: scale(1.36); opacity: 0; }
+    }
+
+    @keyframes particleTwinkle {
+      0%, 100% { transform: translate3d(0, 0, 0) scale(0.65); opacity: 0.2; }
+      50% { transform: translate3d(0, -5px, 0) scale(1.18); opacity: 0.95; }
+    }
+
+    .mochi-float-group {
+      animation: mochiFloat var(--breath-duration) ease-in-out infinite;
+    }
+
+    .mochi-floor-shadow {
+      animation: shadowPulse var(--breath-duration) ease-in-out infinite;
+    }
+
+    .mochi-ambient-glow { opacity: var(--glow-opacity); }
+    .mochi-blush-group { opacity: var(--blush-opacity); }
+
+    .mochi-badge-group {
+      opacity: var(--badge-opacity);
+      transform: scale(var(--badge-scale));
+      transform-origin: 68px 56px;
+    }
+
+    .mochi-hands-group { opacity: var(--hands-opacity); }
+    .mochi-orbit-ring { opacity: var(--orbit-opacity); transition: opacity 300ms ease; }
+    .mochi-ripple-ring { opacity: var(--ripple-opacity); transform-origin: 120px 108px; }
+    .mochi-particles-group { opacity: var(--particles-opacity); transition: opacity 300ms ease; }
+
+    /* Eyes Base Visibility */
+    .eye-dot { opacity: 1; transition: opacity 160ms ease, transform 220ms ease; transform-box: fill-box; transform-origin: center; }
+    .eye-happy-arc { opacity: 0; transition: opacity 160ms ease; }
+    .eye-flat-line { opacity: 0; transition: opacity 160ms ease; }
+    .eye-sleepy-arc { opacity: 0; transition: opacity 160ms ease; }
+
+    /* Badge inner shapes */
+    .badge-pill-shape { opacity: 1; transition: opacity 180ms ease; }
+    .badge-circle-shape { opacity: 0; transition: opacity 180ms ease; }
+
+    .badge-dot-1 { animation: badgeDotsPulse 1.2s ease-in-out infinite 0s; transform-box: fill-box; transform-origin: center; }
+    .badge-dot-2 { animation: badgeDotsPulse 1.2s ease-in-out infinite 0.2s; transform-box: fill-box; transform-origin: center; }
+    .badge-dot-3 { animation: badgeDotsPulse 1.2s ease-in-out infinite 0.4s; transform-box: fill-box; transform-origin: center; }
+
+    .tint-blue, .tint-purple, .tint-amber, .tint-slate {
+      opacity: 0;
+      transition: opacity 320ms ease;
+    }
+
+    /* ==========================================================================
+       16 FOUNDATION STATES STYLING
+       ========================================================================== */
+    .mochi-svg[data-state="idle"] {
+      --glow-opacity: 0.08;
+      --blush-opacity: 0.12;
+      --breath-duration: 4s;
+    }
+
+    .mochi-svg[data-state="waiting-permission"] {
+      --glow-opacity: 0.18;
+      --blush-opacity: 0.36;
+      --badge-opacity: 1;
+      --badge-scale: 1;
+      --breath-duration: 3.2s;
+    }
+    .mochi-svg[data-state="waiting-permission"] .tint-amber { opacity: 0.35; }
+    .mochi-svg[data-state="waiting-permission"] .badge-pill-shape { opacity: 0; }
+    .mochi-svg[data-state="waiting-permission"] .badge-circle-shape { opacity: 1; }
+    .mochi-svg[data-state="waiting-permission"] .mochi-pose-group { transform: rotate(-4deg); }
+    .mochi-svg[data-state="waiting-permission"] .mochi-face-group { transform: translate3d(-4px, -5px, 0); }
+
+    .mochi-svg[data-state="listening"] {
+      --glow-opacity: 0.32;
+      --blush-opacity: 0.45;
+      --badge-opacity: 1;
+      --badge-scale: 1;
+      --breath-duration: 2.8s;
+    }
+    .mochi-svg[data-state="listening"] .tint-blue { opacity: 0.85; }
+    .mochi-svg[data-state="listening"] .mochi-pose-group { transform: scale(1.02); }
+    .mochi-svg[data-state="listening"] .mochi-face-group { transform: translate3d(-2px, 5px, 0); }
+
+    .mochi-svg[data-state="hearing"] {
+      --glow-opacity: 0.45;
+      --blush-opacity: 0.55;
+      --badge-opacity: 1;
+      --badge-scale: 1.04;
+      --ripple-opacity: 1;
+      --breath-duration: 1.5s;
+    }
+    .mochi-svg[data-state="hearing"] .tint-blue { opacity: 0.95; }
+    .mochi-svg[data-state="hearing"] .mochi-pose-group { transform: scale(1.04, 0.98); }
+    .mochi-svg[data-state="hearing"] .mochi-face-group { transform: translate3d(0, 3px, 0); }
+    .mochi-svg[data-state="hearing"] .eye-dot { transform: scale(1.1); }
+    .mochi-svg[data-state="hearing"] .mochi-ripple-ring {
+      animation: rippleWave 1.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    }
+
+    .mochi-svg[data-state="thinking"] {
+      --glow-opacity: 0.36;
+      --blush-opacity: 0.42;
+      --badge-opacity: 1;
+      --badge-scale: 1;
+      --orbit-opacity: 0.55;
+      --breath-duration: 2.4s;
+    }
+    .mochi-svg[data-state="thinking"] .tint-purple { opacity: 0.88; }
+    .mochi-svg[data-state="thinking"] .badge-pill-bg { fill: #7c3aed; }
+    .mochi-svg[data-state="thinking"] .mochi-pose-group { transform: rotate(2deg); }
+    .mochi-svg[data-state="thinking"] .mochi-face-group { transform: translate3d(3px, -4px, 0); }
+
+    .mochi-svg[data-state="speaking"] {
+      --glow-opacity: 0.38;
+      --blush-opacity: 0.5;
+      --ripple-opacity: 0.8;
+      --breath-duration: 1.1s;
+    }
+    .mochi-svg[data-state="speaking"] .tint-blue { opacity: 0.45; }
+    .mochi-svg[data-state="speaking"] .mochi-pose-group {
+      transform:
+        translate3d(0, calc(var(--audio-level) * -7px), 0)
+        scale(
+          calc(1 - (var(--audio-level) * 0.045)),
+          calc(1 + (var(--audio-level) * 0.065))
+        );
+      transition: transform 65ms linear;
+    }
+    .mochi-svg[data-state="speaking"] .mochi-face-group {
+      transform: translate3d(0, calc(var(--audio-level) * -3.5px), 0);
+      transition: transform 65ms linear;
+    }
+    .mochi-svg[data-state="speaking"] .mochi-ripple-ring {
+      animation: rippleWave 1.4s ease-out infinite;
+    }
+
+    .mochi-svg[data-state="followup"] {
+      --glow-opacity: 0.22;
+      --blush-opacity: 0.35;
+      --badge-opacity: 0.9;
+      --badge-scale: 0.92;
+      --breath-duration: 3.4s;
+    }
+    .mochi-svg[data-state="followup"] .tint-blue { opacity: 0.5; }
+    .mochi-svg[data-state="followup"] .mochi-pose-group { transform: rotate(3.5deg); }
+    .mochi-svg[data-state="followup"] .mochi-face-group { transform: translate3d(2px, 1px, 0); }
+
+    .mochi-svg[data-state="paused"] {
+      --glow-opacity: 0.03;
+      --blush-opacity: 0;
+      --breath-duration: 5.5s;
+    }
+    .mochi-svg[data-state="paused"] .tint-slate { opacity: 0.35; }
+    .mochi-svg[data-state="paused"] .mochi-pose-group { transform: translate3d(0, 4px, 0); }
+    .mochi-svg[data-state="paused"] .eye-dot { opacity: 0; }
+    .mochi-svg[data-state="paused"] .eye-flat-line { opacity: 1; }
+
+    .mochi-svg[data-state="interrupted"] {
+      --glow-opacity: 0.3;
+      --blush-opacity: 0.45;
+      --breath-duration: 2s;
+    }
+    .mochi-svg[data-state="interrupted"] .tint-blue { opacity: 0.6; }
+    .mochi-svg[data-state="interrupted"] .mochi-pose-group { transform: translate3d(0, 3px, 0) scale(1.07, 0.93); }
+    .mochi-svg[data-state="interrupted"] .eye-dot { transform: scale(1.18); }
+
+    .mochi-svg[data-state="error"] {
+      --glow-opacity: 0.34;
+      --blush-opacity: 0.55;
+      --badge-opacity: 1;
+      --badge-scale: 1;
+      --orbit-opacity: 0.45;
+      --breath-duration: 3.6s;
+    }
+    .mochi-svg[data-state="error"] .tint-amber { opacity: 0.9; }
+    .mochi-svg[data-state="error"] .badge-pill-shape { opacity: 0; }
+    .mochi-svg[data-state="error"] .badge-circle-shape { opacity: 1; }
+    .mochi-svg[data-state="error"] .mochi-pose-group { transform: rotate(-2.5deg); }
+    .mochi-svg[data-state="error"] .mochi-face-group { transform: translate3d(0, 2px, 0); }
+
+    .mochi-svg[data-state="offline"] {
+      --glow-opacity: 0.04;
+      --blush-opacity: 0.1;
+      --badge-opacity: 0.92;
+      --badge-scale: 0.95;
+      --breath-duration: 5s;
+    }
+    .mochi-svg[data-state="offline"] .tint-slate { opacity: 0.75; }
+    .mochi-svg[data-state="offline"] .badge-pill-shape { opacity: 0; }
+    .mochi-svg[data-state="offline"] .badge-circle-shape { opacity: 1; }
+    .mochi-svg[data-state="offline"] .badge-circle-bg { fill: #64748b; }
+    .mochi-svg[data-state="offline"] .mochi-pose-group { transform: translate3d(0, 4px, 0); }
+    .mochi-svg[data-state="offline"] .eye-dot { opacity: 0; }
+    .mochi-svg[data-state="offline"] .eye-sleepy-arc { opacity: 1; }
+
+    .mochi-svg[data-state="happy"] {
+      --glow-opacity: 0.35;
+      --blush-opacity: 0.55;
+      --hands-opacity: 1;
+      --particles-opacity: 1;
+      --breath-duration: 1.9s;
+    }
+    .mochi-svg[data-state="happy"] .mochi-pose-group { transform: translate3d(0, -6px, 0) rotate(-1.5deg); }
+    .mochi-svg[data-state="happy"] .eye-dot { opacity: 0; }
+    .mochi-svg[data-state="happy"] .eye-happy-arc { opacity: 1; }
+    .mochi-svg[data-state="happy"] .particle-dot {
+      animation: particleTwinkle 2.2s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .mochi-svg[data-state="proud"] {
+      --glow-opacity: 0.22;
+      --blush-opacity: 0.45;
+      --breath-duration: 3.3s;
+    }
+    .mochi-svg[data-state="proud"] .mochi-pose-group { transform: translate3d(0, -3px, 0); }
+    .mochi-svg[data-state="proud"] .eye-dot { opacity: 0; }
+    .mochi-svg[data-state="proud"] .eye-happy-arc { opacity: 1; }
+
+    .mochi-svg[data-state="curious"] {
+      --glow-opacity: 0.24;
+      --blush-opacity: 0.38;
+      --hands-opacity: 1;
+      --breath-duration: 3s;
+    }
+    .mochi-svg[data-state="curious"] .tint-blue { opacity: 0.35; }
+    .mochi-svg[data-state="curious"] .mochi-hand-left { opacity: 0; }
+    .mochi-svg[data-state="curious"] .mochi-pose-group { transform: rotate(6deg) translate3d(0, -3px, 0); }
+    .mochi-svg[data-state="curious"] .mochi-eye-left .eye-dot { transform: scale(0.88); }
+    .mochi-svg[data-state="curious"] .mochi-eye-right .eye-dot { transform: scale(1.18); }
+
+    .mochi-svg[data-state="focus"] {
+      --glow-opacity: 0.05;
+      --blush-opacity: 0.22;
+      --breath-duration: 6s;
+    }
+    .mochi-svg[data-state="focus"] .mochi-pose-group { transform: translate3d(0, 2px, 0); }
+    .mochi-svg[data-state="focus"] .eye-dot { transform: scale(0.92); opacity: 0.85; }
+
+    .mochi-svg[data-state="sleepy"] {
+      --glow-opacity: 0.08;
+      --blush-opacity: 0.32;
+      --breath-duration: 6.5s;
+    }
+    .mochi-svg[data-state="sleepy"] .tint-amber { opacity: 0.28; }
+    .mochi-svg[data-state="sleepy"] .mochi-pose-group { transform: translate3d(0, 5px, 0) scale(1.03, 0.97); }
+    .mochi-svg[data-state="sleepy"] .eye-dot { opacity: 0; }
+    .mochi-svg[data-state="sleepy"] .eye-sleepy-arc { opacity: 1; }
+
+    /* ==========================================================================
+       17 EXTENDED AI / PRODUCT STATES (v1.2)
+       These visuals never determine the microphone or operation truth.
+       ========================================================================== */
+    .mochi-svg[data-state="clarifying"] { --glow-opacity: 0.25; --blush-opacity: 0.32; --breath-duration: 3.2s; }
+    .mochi-svg[data-state="clarifying"] .tint-blue { opacity: 0.42; }
+    .mochi-svg[data-state="clarifying"] .mochi-pose-group { transform: rotate(3deg); }
+    .mochi-svg[data-state="clarifying"] .mochi-eye-right .eye-dot { transform: scale(1.12); }
+
+    .mochi-svg[data-state="confirming"] { --glow-opacity: 0.18; --blush-opacity: 0.28; --breath-duration: 3.6s; }
+    .mochi-svg[data-state="confirming"] .tint-amber { opacity: 0.30; }
+    .mochi-svg[data-state="confirming"] .mochi-pose-group { transform: rotate(2deg); }
+
+    .mochi-svg[data-state="awaiting-response"] { --glow-opacity: 0.12; --blush-opacity: 0.24; --breath-duration: 4s; }
+    .mochi-svg[data-state="awaiting-response"] .tint-blue { opacity: 0.20; }
+    .mochi-svg[data-state="awaiting-response"] .mochi-pose-group { transform: rotate(-1deg); }
+
+    .mochi-svg[data-state="planning"] { --glow-opacity: 0.28; --blush-opacity: 0.32; --orbit-opacity: 0.48; --breath-duration: 2.8s; }
+    .mochi-svg[data-state="planning"] .tint-purple { opacity: 0.54; }
+    .mochi-svg[data-state="planning"] .mochi-face-group { transform: translate3d(2px, -4px, 0); }
+
+    .mochi-svg[data-state="suggesting"] { --glow-opacity: 0.25; --blush-opacity: 0.34; --hands-opacity: 0.62; --breath-duration: 3s; }
+    .mochi-svg[data-state="suggesting"] .tint-blue { opacity: 0.42; }
+    .mochi-svg[data-state="suggesting"] .mochi-pose-group { transform: rotate(3deg); }
+
+    .mochi-svg[data-state="working"] { --glow-opacity: 0.24; --blush-opacity: 0.28; --badge-opacity: 0.9; --badge-scale: 0.92; --orbit-opacity: 0.24; --breath-duration: 2.5s; }
+    .mochi-svg[data-state="working"] .tint-blue { opacity: 0.38; }
+    .mochi-svg[data-state="working"] .badge-pill-bg { fill: #64748b; }
+
+    .mochi-svg[data-state="researching"] { --glow-opacity: 0.32; --blush-opacity: 0.32; --orbit-opacity: 0.62; --badge-opacity: 0.88; --badge-scale: 0.94; --breath-duration: 2.6s; }
+    .mochi-svg[data-state="researching"] .tint-purple { opacity: 0.66; }
+    .mochi-svg[data-state="researching"] .badge-pill-bg { fill: #8b5cf6; }
+
+    .mochi-svg[data-state="saving"] { --glow-opacity: 0.24; --blush-opacity: 0.28; --badge-opacity: 1; --badge-scale: 0.95; --breath-duration: 2.8s; }
+    .mochi-svg[data-state="saving"] .tint-blue { opacity: 0.36; }
+    .mochi-svg[data-state="saving"] .badge-pill-bg { fill: #10b981; }
+
+    .mochi-svg[data-state="syncing"] { --glow-opacity: 0.20; --blush-opacity: 0.22; --orbit-opacity: 0.3; --badge-opacity: 0.9; --breath-duration: 3.2s; }
+    .mochi-svg[data-state="syncing"] .tint-blue { opacity: 0.30; }
+    .mochi-svg[data-state="syncing"] .badge-pill-bg { fill: #10b981; }
+
+    .mochi-svg[data-state="empathetic"] { --glow-opacity: 0.08; --blush-opacity: 0.28; --breath-duration: 4.8s; }
+    .mochi-svg[data-state="empathetic"] .tint-slate { opacity: 0.28; }
+    .mochi-svg[data-state="empathetic"] .mochi-pose-group { transform: rotate(-1.5deg) translateY(2px); }
+
+    .mochi-svg[data-state="encouraging"] { --glow-opacity: 0.22; --blush-opacity: 0.42; --hands-opacity: 0.48; --breath-duration: 3.4s; }
+    .mochi-svg[data-state="encouraging"] .tint-amber { opacity: 0.22; }
+    .mochi-svg[data-state="encouraging"] .eye-dot { opacity: 0; }
+    .mochi-svg[data-state="encouraging"] .eye-happy-arc { opacity: 1; }
+
+    .mochi-svg[data-state="reviewing"] { --glow-opacity: 0.20; --blush-opacity: 0.26; --orbit-opacity: 0.34; --breath-duration: 4s; }
+    .mochi-svg[data-state="reviewing"] .tint-purple { opacity: 0.34; }
+    .mochi-svg[data-state="reviewing"] .mochi-face-group { transform: translate3d(1px, -2px, 0); }
+
+    .mochi-svg[data-state="reflecting"] { --glow-opacity: 0.10; --blush-opacity: 0.22; --breath-duration: 4.5s; }
+    .mochi-svg[data-state="reflecting"] .tint-slate { opacity: 0.22; }
+    .mochi-svg[data-state="reflecting"] .mochi-face-group { transform: translate3d(2px, -3px, 0); }
+
+    .mochi-svg[data-state="uncertain"] { --glow-opacity: 0.10; --blush-opacity: 0.22; --breath-duration: 3.8s; }
+    .mochi-svg[data-state="uncertain"] .tint-slate { opacity: 0.28; }
+    .mochi-svg[data-state="uncertain"] .mochi-pose-group { transform: rotate(2deg); }
+    .mochi-svg[data-state="uncertain"] .mochi-eye-left .eye-dot { transform: scale(0.94); }
+    .mochi-svg[data-state="uncertain"] .mochi-eye-right .eye-dot { transform: scale(1.08); }
+
+    .mochi-svg[data-state="recovering"] { --glow-opacity: 0.22; --blush-opacity: 0.30; --breath-duration: 3s; }
+    .mochi-svg[data-state="recovering"] .tint-blue { opacity: 0.30; }
+    .mochi-svg[data-state="recovering"] .mochi-pose-group { transform: translateY(-1px); }
+
+    .mochi-svg[data-state="schedule-conflict"] { --glow-opacity: 0.18; --blush-opacity: 0.30; --breath-duration: 3.4s; }
+    .mochi-svg[data-state="schedule-conflict"] .tint-amber { opacity: 0.36; }
+    .mochi-svg[data-state="schedule-conflict"] .mochi-pose-group { transform: rotate(-3deg); }
+    .mochi-svg[data-state="schedule-conflict"] .mochi-eye-right .eye-dot { transform: scale(1.08); }
+
+    .mochi-svg[data-state="text-mode"] { --glow-opacity: 0.05; --blush-opacity: 0.10; --breath-duration: 5s; }
+    .mochi-svg[data-state="text-mode"] .tint-slate { opacity: 0.20; }
+    .mochi-svg[data-state="text-mode"] .mochi-pose-group { transform: translateY(2px); }
+
+    /* ==========================================================================
+       COMPACT VARIANT OVERRIDES (Section 4 of Spec: 96x88px Overlay Presence)
+       ========================================================================== */
+    body.compact-preview .mochi-svg .mochi-badge-group,
+    body.compact-preview .mochi-svg .mochi-hands-group,
+    body.compact-preview .mochi-svg .mochi-particles-group,
+    body.compact-preview .mochi-svg .mochi-orbit-ring,
+    body.compact-preview .mochi-svg .mochi-ripple-ring {
+      opacity: 0 !important;
+    }
+
+    body.compact-preview .mochi-svg .mochi-float-group {
+      animation-name: mochiFloatCompact !important;
+    }
+
+    /* Boost eye readability by +18% at small sizes on phone screens */
+    body.compact-preview .mochi-svg .mochi-eye-left,
+    body.compact-preview .mochi-svg .mochi-eye-right {
+      transform: scale(1.18);
+    }
+
+    /* ==========================================================================
+       AUTONOMOUS MICRO-EXPRESSIONS CLASSES
+       ========================================================================== */
+    .mochi-svg.micro-blink .eye-dot {
+      transform: scaleY(0.08) !important;
+      transition: transform 65ms ease !important;
+    }
+
+    .mochi-svg.micro-wink .mochi-eye-right .eye-dot { opacity: 0 !important; }
+    .mochi-svg.micro-wink .mochi-eye-right .eye-happy-arc { opacity: 1 !important; }
+    .mochi-svg.micro-wink .mochi-pose-group { transform: rotate(4.5deg) !important; }
+    .mochi-svg.micro-wink .mochi-blush-group { opacity: 0.48 !important; }
+
+    .mochi-svg.micro-look-left .mochi-face-group { transform: translate3d(-7px, -1px, 0) !important; }
+    .mochi-svg.micro-look-left .mochi-pose-group { transform: rotate(-2deg) !important; }
+
+    .mochi-svg.micro-look-right .mochi-face-group { transform: translate3d(7px, -1px, 0) !important; }
+    .mochi-svg.micro-look-right .mochi-pose-group { transform: rotate(2deg) !important; }
+
+    .mochi-svg.micro-sigh .mochi-pose-group {
+      transform: translate3d(0, -9px, 0) scale(1.05, 0.96) !important;
+      transition: transform 700ms ease-out !important;
+    }
+    .mochi-svg.micro-sigh .eye-dot { transform: scaleY(0.45) !important; }
+
+    .mochi-svg.micro-jelly .mochi-pose-group {
+      transform: scale(1.06, 0.94) !important;
+      transition: transform 140ms ease-out !important;
+    }
+    .mochi-svg.micro-happy .eye-dot { opacity: 0 !important; }
+    .mochi-svg.micro-happy .eye-happy-arc { opacity: 1 !important; }
+    .mochi-svg.micro-happy .mochi-blush-group { opacity: 0.32 !important; }
+
+    /* ==========================================================================
+       REDUCED MOTION & QUIET FOCUS MODES
+       ========================================================================== */
+    body.reduced-motion .mochi-float-group,
+    body.reduced-motion .mochi-floor-shadow,
+    body.reduced-motion .mochi-ripple-ring,
+    body.reduced-motion .particle-dot,
+    body.reduced-motion .badge-dot-1,
+    body.reduced-motion .badge-dot-2,
+    body.reduced-motion .badge-dot-3 {
+      animation: none !important;
+    }
+
+    body.quiet-mode .mochi-float-group {
+      animation-duration: 7s !important;
+    }
+    body.quiet-mode .mochi-ripple-ring,
+    body.quiet-mode .mochi-particles-group,
+    body.quiet-mode .mochi-orbit-ring,
+    body.quiet-mode .mochi-badge-group {
+      opacity: 0 !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .mochi-float-group,
+      .mochi-floor-shadow,
+      .mochi-ripple-ring,
+      .mochi-orbit-ring,
+      .particle-dot,
+      .badge-dot-1,
+      .badge-dot-2,
+      .badge-dot-3 {
+        animation: none !important;
+      }
+      .mochi-svg * { transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Shared SVG Gradients & Superellipse n=2.7 Clip Path -->
+  <svg width="0" height="0" style="position:absolute; pointer-events:none;" aria-hidden="true">
+    <defs>
+      <path id="mochi-squircle-path" d="M 120 46 C 171 46, 200 66, 200 108 C 200 150, 171 170, 120 170 C 69 170, 40 150, 40 108 C 40 66, 69 46, 120 46 Z" />
+
+      <clipPath id="mochi-body-clip">
+        <use href="#mochi-squircle-path" />
+      </clipPath>
+
+      <radialGradient id="mochi-base-grad" cx="64%" cy="32%" r="72%" fx="64%" fy="30%">
+        <stop offset="0%" stop-color="#FFFFFF" />
+        <stop offset="42%" stop-color="#F5F6F9" />
+        <stop offset="82%" stop-color="#D8DCE6" />
+        <stop offset="100%" stop-color="#C2C7D4" />
+      </radialGradient>
+
+      <radialGradient id="mochi-specular-grad" cx="67%" cy="30%" r="36%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95" />
+        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+      </radialGradient>
+
+      <radialGradient id="mochi-tint-blue" cx="50%" cy="88%" r="75%">
+        <stop offset="0%" stop-color="#58A6FF" stop-opacity="0.95" />
+        <stop offset="55%" stop-color="#8EC5FF" stop-opacity="0.55" />
+        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+      </radialGradient>
+
+      <radialGradient id="mochi-tint-purple" cx="50%" cy="88%" r="75%">
+        <stop offset="0%" stop-color="#A78BFA" stop-opacity="0.92" />
+        <stop offset="55%" stop-color="#C4B5FD" stop-opacity="0.5" />
+        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+      </radialGradient>
+
+      <radialGradient id="mochi-tint-amber" cx="50%" cy="88%" r="75%">
+        <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.8" />
+        <stop offset="55%" stop-color="#FDE68A" stop-opacity="0.45" />
+        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+      </radialGradient>
+
+      <radialGradient id="mochi-tint-slate" cx="50%" cy="80%" r="75%">
+        <stop offset="0%" stop-color="#64748B" stop-opacity="0.65" />
+        <stop offset="100%" stop-color="#94A3B8" stop-opacity="0.15" />
+      </radialGradient>
+
+      <radialGradient id="mochi-blush-grad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#F472B6" stop-opacity="0.85" />
+        <stop offset="100%" stop-color="#F472B6" stop-opacity="0" />
+      </radialGradient>
+
+      <radialGradient id="mochi-hand-grad" cx="62%" cy="32%" r="70%">
+        <stop offset="0%" stop-color="#FFFFFF" />
+        <stop offset="65%" stop-color="#E5E7EB" />
+        <stop offset="100%" stop-color="#C6CBD6" />
+      </radialGradient>
+
+      <radialGradient id="mochi-shadow-grad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#000000" stop-opacity="0.72" />
+        <stop offset="60%" stop-color="#000000" stop-opacity="0.28" />
+        <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+      </radialGradient>
+
+      <radialGradient id="mochi-glow-grad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#93C5FD" stop-opacity="0.65" />
+        <stop offset="55%" stop-color="#60A5FA" stop-opacity="0.2" />
+        <stop offset="100%" stop-color="#3B82F6" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+  </svg>
+
+  <div class="container">
+    <!-- Fidelity & Intentional Differences Disclosure Banner -->
+    <aside class="fidelity-note" aria-label="ملاحظات المطابقة البصرية">
+      <strong>🔍 ملاحظة الأمانة البصرية والفروق المتعمدة عن الصور المرجعية (Fidelity Disclosure for Founder Approval):</strong>
+      <ul>
+        <li><strong>الجزيئات في الصورة 4 (Happy):</strong> استُبدل الغبار النقطي الكثيف بـ <strong>12 دائرة SVG فقط</strong> تتحرك بـ <code>transform/opacity</code> لضمان سلاسة الأداء على هاتف Galaxy A51.</li>
+        <li><strong>التوهج والظل الأرضي:</strong> استُبدلت فلاتر الـ Blur النقطية بـ <code>radialGradient</code> نقي لتجنب إعادة الرسم المكلفة (GPU Repaint Jank).</li>
+        <li><strong>منحنى الجسم (Superellipse n=2.7):</strong> مسار Cubic Bézier الحالي تقريب بصري للمعادلة، وليس تطابقاً رياضياً حرفياً عند كل نقطة. تتم مراجعته بمقارنة الصورة المرجعية على المقاس المستهدف.</li>
+        <li><strong>الشارة العلوية مقابل مؤشر المايك:</strong> الشارة (<code>...</code> / <code>!</code>) تعبير بصري فقط؛ مؤشر المايك عنصر UI مستقل.</li>
+        <li><strong>هذه صفحة معاينة فقط:</strong> لا تستخدم المايك فعلياً، ولا ترسل Push Notifications، ولا تحفظ بيانات. النقر يحاكي شكل الحالة فقط.</li>
+        <li><strong>المصغّرات أخف:</strong> شبكة الحالات تستخدم SVG مصغراً ثابتاً لتقليل الحمل؛ المعاينة الرئيسية تعرض التفاصيل الكاملة.</li>
+      </ul>
+    </aside>
+
+    <header>
+      <div>
+        <h1>🍡 Mochi AI — المرجع البصري التفاعلي للحالات الـ 33 وحالات الإشعارات</h1>
+        <p>SVG + CSS خالص بدون مكتبات — يدعم الحالات الـ 33، الحجم المدمج، تقليل الحركة، وقراءة تقريبية لإيقاع requestAnimationFrame</p>
+      </div>
+      <div class="top-controls">
+        <label class="toggle-pill">
+          <input type="checkbox" id="toggle-compact-mode" />
+          <span>Compact Variant (حجم الـ Overlay 96×88px)</span>
+        </label>
+        <label class="toggle-pill">
+          <input type="checkbox" id="toggle-reduced-motion" />
+          <span>Reduced Motion (تقليل الحركة)</span>
+        </label>
+        <label class="toggle-pill">
+          <input type="checkbox" id="toggle-quiet-mode" />
+          <span>Quiet Focus (سكون التركيز)</span>
+        </label>
+        <label class="toggle-pill">
+          <input type="checkbox" id="toggle-cursor-follow" checked />
+          <span>تتبع المؤشر (Cursor Follow)</span>
+        </label>
+      </div>
+    </header>
+
+    <!-- Main Interactive Preview & Controls -->
+    <section class="showcase-layout">
+      <div class="stage-card" id="interactive-stage">
+        <div class="stage-hud">
+          <div class="hud-group">
+            <span class="badge-status" id="hud-state-label">STATE: idle</span>
+            <span class="badge-status fps-badge" id="hud-fps-counter" title="مؤشر تقريبي لإيقاع requestAnimationFrame وليس قياساً نهائياً لأداء الرسم">RAF ~60</span>
+          </div>
+          <!-- Separate Functional Mic Indicator (Never carried by character alone) -->
+          <div class="external-mic-pill" id="external-mic-indicator" data-mic="off" role="status" aria-live="polite" aria-atomic="true">
+            <span class="mic-dot"></span>
+            <span id="external-mic-text">المايك: متوقف (Off)</span>
+          </div>
+        </div>
+
+        <div class="stage-mochi-wrapper" id="main-mochi-container" title="معاينة فقط: المس Mochi لمحاكاة حالة الصوت" role="button" tabindex="0" aria-label="Mochi. المس لمحاكاة بدء الاستماع أو إيقافه" aria-pressed="false"></div>
+
+        <div class="stage-caption-box" id="stage-caption-text" role="status" aria-live="polite" aria-atomic="true">
+          Mochi في وضع الخمول الهادئ (Idle). المس Mochi للتفاعل.
+        </div>
+
+        <div class="stage-footer">
+          <span id="hud-micro-label">معاينة بصرية فقط — الحركات التلقائية تعمل في Idle بالحجم الكامل عندما تسمح إعدادات الحركة.</span>
+        </div>
+      </div>
+
+      <div class="controls-card">
+        <div>
+          <div class="controls-section-title">
+            <span>1. الحالات البصرية الـ 33 (Core + Extended AI States)</span>
+            <span>اضغط للمعاينة بالحجم الكامل</span>
+          </div>
+          <div class="state-buttons-grid" id="state-switcher-buttons"></div>
+        </div>
+
+        <div>
+          <div class="controls-section-title">
+            <span>2. حالات الإشعارات الـ 6 (Tap / In-App Hint — محاكاة صامتة)</span>
+            <span>صامتة بدون فتح المايك تلقائياً</span>
+          </div>
+          <div class="notif-buttons-grid" id="notif-switcher-buttons"></div>
+        </div>
+
+        <div>
+          <div class="controls-section-title">
+            <span>3. الحركات التلقائية الدقيقة في Idle (Autonomous Micro-Expressions)</span>
+          </div>
+          <div class="micro-buttons-row">
+            <button class="micro-btn" data-micro="double-blink">رمشة مزدوجة (Double Blink)</button>
+            <button class="micro-btn" data-micro="wink">غمزة + ميلان (Wink + Tilt)</button>
+            <button class="micro-btn" data-micro="look-lr">نظرة يمين/يسار (Look L/R)</button>
+            <button class="micro-btn" data-micro="sigh">نَفَس عميق (Deep Breath)</button>
+            <button class="micro-btn" data-micro="jelly">اهتزاز مارشميلو (Soft Jelly)</button>
+            <button class="micro-btn" data-micro="micro-happy">قوس سعادة هادي (Micro Happy Arc)</button>
+          </div>
+        </div>
+
+        <div class="audio-slider-box">
+          <div class="controls-section-title" style="margin-bottom:0;">
+            <span>4. محاكي مستوى الصوت لحالة Speaking (Audio Level 0.0 → 1.0)</span>
+          </div>
+          <div class="audio-slider-row">
+            <span style="font-size:0.75rem; color:var(--text-muted);">0.0</span>
+            <input type="range" id="audio-level-slider" aria-label="محاكاة مستوى الصوت لحركة Mochi" min="0" max="1" step="0.02" value="0.45" />
+            <span style="font-size:0.75rem; color:var(--text-muted);">1.0</span>
+            <button class="micro-btn" id="btn-auto-speak">تشغيل محاكاة كلام حيّ</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- All 33 Visual States Side-by-Side Grid -->
+    <section class="grid-section">
+      <h2>
+        <span>شبكة الحالات البصرية الـ 33 (33 Visual States)</span>
+        <span style="font-size:0.8rem; color:var(--text-muted); font-weight:normal;">المصغّرات ثابتة؛ اضغط على بطاقة لعرض الحالة الكاملة</span>
+      </h2>
+      <div class="states-grid" id="all-states-grid"></div>
+    </section>
+  </div>
+
+  <script>
+    const MOCHI_STATES = [
+      { id: "idle", ar: "١. خامل / مستيقظ بهدوء", en: "Sleeping / Idle", mic: "off", caption: "Mochi في وضع الهدوء. المس Mochi لبدء الكلام." },
+      { id: "waiting-permission", ar: "٢. انتظار إذن المايك", en: "Waiting Permission", mic: "prompt", caption: "أهلاً، أنا موتشي. محتاج إذن المايك عشان أسمعك." },
+      { id: "listening", ar: "٣. بيسمع (المايك نشط)", en: "Listening", mic: "active", caption: "أنا معاك، قولّي تحب نشتغل على إيه؟" },
+      { id: "hearing", ar: "٤. يلتقط كلامك الآن", en: "Hearing Speech", mic: "active", caption: "«عايز أرتب أولويات النهارده...» (جاري التقاط الكلام)" },
+      { id: "thinking", ar: "٥. بيفكر ويعالج", en: "Thinking", mic: "off", caption: "ثواني أرتبلك خطوة واحدة واضحة..." },
+      { id: "speaking", ar: "٦. بيتكلم (يتفاعل مع الصوت)", en: "Speaking", mic: "off", caption: "أقترح نبدأ بمراجعة الـ API الأول؛ وقتها مناسب ليك؟" },
+      { id: "followup", ar: "٧. نافذة المتابعة (5 ث)", en: "Follow-up Window", mic: "active", caption: "المايك نشط لـ 5 ثوانٍ لو تحب تضيف أو تعدل حاجة." },
+      { id: "paused", ar: "٨. متوقف مؤقتاً / مكتوم", en: "Paused / Muted", mic: "off", caption: "تم إيقاف الصوت مؤقتاً. تقدر تكمل بالكتابة أو تلمسني للرجوع." },
+      { id: "interrupted", ar: "٩. تمت مقاطعته بلمسة", en: "Interrupted", mic: "active", caption: "وقفت كلامي فوراً — قولّي التعديل اللي في بالك." },
+      { id: "error", ar: "١٠. خطأ لطيف / لم يفهم", en: "Error (Gentle)", mic: "off", caption: "مش متأكد إني فهمتك صح... تعيدها بطريقة تانية أو تكتبها؟" },
+      { id: "offline", ar: "١١. غير متصل بالشبكة", en: "Offline", mic: "off", caption: "يبدو إن مفيش اتصال بالإنترنت حالياً، فمش هقدر أكمل الطلب. الصوت الخام مش بيتخزن، وأي ملاحظة نصية مش هتتحفظ إلا لو اخترت حفظها." },
+      { id: "happy", ar: "١٢. فرحان / احتفال كبير", en: "Happy / Celebrating", mic: "off", caption: "عاش جداً! خلصت مرحلة كاملة في الـ Roadmap!" },
+      { id: "proud", ar: "١٣. فخور (مهمة خلصت)", en: "Proud (Task Done)", mic: "off", caption: "تمام، علّمت المهمة دي Done. خطوة ممتازة." },
+      { id: "curious", ar: "١٤. متعجب / فضولي", en: "Surprised / Curious", mic: "off", caption: "تقصد ننقل مهمة النهارده ولا نعدّل الـ Roadmap نفسه؟" },
+      { id: "focus", ar: "١٥. حضور هادئ (وقت التركيز)", en: "Focused Quiet", mic: "off", caption: "تايمر التركيز شغال (متبقي 18:40) — حضور هادئ بدون إزعاج." },
+      { id: "sleepy", ar: "١٦. نعسان (يوم راحة)", en: "Sleepy (Break Day)", mic: "off", caption: "يوم راحة سعيد. خد وقتك خالص ومش هنقل أي مهام غير بموافقتك." },
+      { id: "clarifying", ar: "١٧. بيستوضح", en: "Clarifying", mic: "off", caption: "في نقطة محتاج أتأكد منها عشان ما أفترضش حاجة غلط." },
+      { id: "confirming", ar: "١٨. مستني موافقتك", en: "Confirming", mic: "off", caption: "قبل ما أغيّر الجدول، هعرض عليك التعديل ومستني موافقتك." },
+      { id: "awaiting-response", ar: "١٩. مستني ردك", en: "Awaiting Response", mic: "off", caption: "خد وقتك. أنا مستني ردك، والمايك متوقف." },
+      { id: "planning", ar: "٢٠. بيرتب الخطة", en: "Planning", mic: "off", caption: "برتب الخطوات حسب الأولوية والوقت المتاح." },
+      { id: "suggesting", ar: "٢١. بيقترح بديل", en: "Suggesting", mic: "off", caption: "ده اقتراح اختياري، ومش هيتحفظ أو يتنفذ غير لما توافق." },
+      { id: "working", ar: "٢٢. بينفّذ خطوة", en: "Working", mic: "off", caption: "بننفذ الخطوة اللي وافقت عليها... دي معاينة للحالة فقط." },
+      { id: "researching", ar: "٢٣. بيبحث", en: "Researching", mic: "off", caption: "الحالة دي مخصصة لوقت وجود عملية بحث فعلية، مش لمجرد صياغة الرد." },
+      { id: "saving", ar: "٢٤. بيحفظ بموافقتك", en: "Saving", mic: "off", caption: "هحفظ التعديل اللي وافقت عليه. صفحة المعاينة دي لا تحفظ أي بيانات." },
+      { id: "syncing", ar: "٢٥. بيزامن", en: "Syncing", mic: "off", caption: "حالة توضيحية للمزامنة؛ مش معناها إن المزامنة بين الأجهزة متاحة حالياً." },
+      { id: "empathetic", ar: "٢٦. متفهم", en: "Empathetic", mic: "off", caption: "واضح إن اليوم تقيل. نقدر نقلل المطلوب أو نوقف هنا، براحتك." },
+      { id: "encouraging", ar: "٢٧. بيشجع بهدوء", en: "Encouraging", mic: "off", caption: "نبدأ بخطوة صغيرة تكفي دلوقتي، ومش لازم نعمل كل حاجة مرة واحدة." },
+      { id: "reviewing", ar: "٢٨. بيراجع اليوم", en: "Reviewing", mic: "off", caption: "خلينا نراجع اللي حصل النهارده من غير حكم أو لوم." },
+      { id: "reflecting", ar: "٢٩. بيلخّص اللي فهمه", en: "Reflecting", mic: "off", caption: "اللي فهمته منك كذا... صححلي لو في حاجة محتاجة تعديل." },
+      { id: "uncertain", ar: "٣٠. مش متأكد", en: "Uncertain", mic: "off", caption: "مش واثق إني فهمت قصدك بدقة. توضّحلي؟" },
+      { id: "recovering", ar: "٣١. بيحاول يتعافى", en: "Recovering", mic: "off", caption: "في حاجة عطلتني. هحاول أرجع بأمان من غير ما أكرر إجراء ممكن يتنفذ مرتين." },
+      { id: "schedule-conflict", ar: "٣٢. فيه تعارض مواعيد", en: "Schedule Conflict", mic: "off", caption: "فيه تعارض بين المواعيد. هعرض عليك بدائل ومش هغيّر الجدول من نفسي." },
+      { id: "text-mode", ar: "٣٣. وضع الكتابة", en: "Text Mode", mic: "off", caption: "الوضع النصي شغال؛ المايك متوقف تماماً، والنص مش بيتحفظ إلا لو اخترت حفظه." }
+    ];
+
+    const NOTIFICATION_STATES = [
+      {
+        notifId: "FocusMidpoint",
+        mappedState: "focus",
+        micro: "wink",
+        caption: "🔔 [FocusMidpoint]: عدّى نص وقت الـ focus. تحب تكمل ولا تاخد break؟ (المس Mochi للرد)"
+      },
+      {
+        notifId: "FocusComplete",
+        mappedState: "proud",
+        micro: null,
+        caption: "🔔 [FocusComplete]: وقت الجلسة خلص. تحب تسجّلها مكتملة ولا تمد الوقت؟"
+      },
+      {
+        notifId: "TaskStartReady",
+        mappedState: "curious",
+        micro: null,
+        caption: "🔔 [TaskStartReady]: المهمة اللي كانت متخططة قربت لميعادها. نبدأ؟"
+      },
+      {
+        notifId: "GentleReturn",
+        mappedState: "proud",
+        TransitionToIdleAfter: 2000,
+        caption: "🔔 [GentleReturn]: أهلاً بعودتك! نبدأ بخطوة واحدة بسيطة؟ (ترحيب دافئ بلا أي عتاب)"
+      },
+      {
+        notifId: "MorningCheckIn",
+        mappedState: "idle",
+        micro: "sigh",
+        caption: "🔔 [MorningCheckIn]: صباح الخير. نختار أول حاجة مناسبة لليوم؟"
+      },
+      {
+        notifId: "EndOfDayReview",
+        mappedState: "sleepy",
+        micro: null,
+        caption: "🔔 [EndOfDayReview]: تحب نراجع اليوم في دقيقتين ونجهّز بكرة على مهلك؟"
+      }
+    ];
+
+    function createMochiSVG(stateId, decorative = false) {
+      // Lightweight static thumbnails avoid running 33 full animated SVGs at once.
+      if (decorative) {
+        return `
+          <svg class="mochi-svg mini-mochi-svg" data-state="${stateId}" viewBox="0 0 240 220" aria-hidden="true" focusable="false">
+            <g class="mochi-float-group"><g class="mochi-pose-group">
+              <g clip-path="url(#mochi-body-clip)">
+                <use href="#mochi-squircle-path" fill="url(#mochi-base-grad)" />
+                <rect class="tint-blue" x="35" y="40" width="170" height="135" fill="url(#mochi-tint-blue)" />
+                <rect class="tint-purple" x="35" y="40" width="170" height="135" fill="url(#mochi-tint-purple)" />
+                <rect class="tint-amber" x="35" y="40" width="170" height="135" fill="url(#mochi-tint-amber)" />
+                <rect class="tint-slate" x="35" y="40" width="170" height="135" fill="url(#mochi-tint-slate)" />
+                <use href="#mochi-squircle-path" fill="url(#mochi-specular-grad)" />
+              </g>
+              <g class="mochi-face-group">
+                <g class="mochi-blush-group">
+                  <ellipse cx="76" cy="121" rx="14" ry="6.5" fill="url(#mochi-blush-grad)" />
+                  <ellipse cx="164" cy="121" rx="14" ry="6.5" fill="url(#mochi-blush-grad)" />
+                </g>
+                <g class="mochi-eye-left">
+                  <ellipse class="eye-dot" cx="95" cy="114" rx="8.4" ry="9.5" fill="#181619" />
+                  <path class="eye-happy-arc" d="M 83 114 C 87 102, 103 102, 107 114" fill="none" stroke="#181619" stroke-width="6.5" stroke-linecap="round" />
+                  <line class="eye-flat-line" x1="85" y1="115" x2="105" y2="115" stroke="#181619" stroke-width="5.5" stroke-linecap="round" />
+                  <path class="eye-sleepy-arc" d="M 85 112 C 89 120, 101 120, 105 112" fill="none" stroke="#181619" stroke-width="5.5" stroke-linecap="round" />
+                </g>
+                <g class="mochi-eye-right">
+                  <ellipse class="eye-dot" cx="145" cy="114" rx="8.4" ry="9.5" fill="#181619" />
+                  <path class="eye-happy-arc" d="M 133 114 C 137 102, 153 102, 157 114" fill="none" stroke="#181619" stroke-width="6.5" stroke-linecap="round" />
+                  <line class="eye-flat-line" x1="135" y1="115" x2="155" y2="115" stroke="#181619" stroke-width="5.5" stroke-linecap="round" />
+                  <path class="eye-sleepy-arc" d="M 135 112 C 139 120, 151 120, 155 112" fill="none" stroke="#181619" stroke-width="5.5" stroke-linecap="round" />
+                </g>
+              </g>
+            </g></g>
+          </svg>
+        `;
+      }
+      return `
+        <svg class="mochi-svg" data-state="${stateId}" viewBox="0 0 240 220" role="img" aria-label="Mochi character in ${stateId} state">
+          <!-- 1. Ambient Back Glow -->
+          <circle class="mochi-ambient-glow" cx="120" cy="108" r="96" fill="url(#mochi-glow-grad)" />
+
+          <!-- 2. Concentric Orbit / Ripple Rings -->
+          <circle class="mochi-orbit-ring" cx="120" cy="108" r="92" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="1.2" />
+          <circle class="mochi-ripple-ring" cx="120" cy="108" r="82" fill="none" stroke="rgba(96,165,250,0.45)" stroke-width="2" />
+
+          <!-- 3. Celebrating Particles (12 lightweight SVG circles as specified in Section 8) -->
+          <g class="mochi-particles-group">
+            <circle class="particle-dot" cx="28" cy="68" r="2.3" fill="#FFFFFF" style="animation-delay:0s" />
+            <circle class="particle-dot" cx="46" cy="40" r="1.7" fill="#E2E8F0" style="animation-delay:0.25s" />
+            <circle class="particle-dot" cx="195" cy="42" r="2.4" fill="#FFFFFF" style="animation-delay:0.5s" />
+            <circle class="particle-dot" cx="214" cy="78" r="1.8" fill="#CBD5E1" style="animation-delay:0.15s" />
+            <circle class="particle-dot" cx="208" cy="138" r="2.2" fill="#FFFFFF" style="animation-delay:0.4s" />
+            <circle class="particle-dot" cx="32" cy="144" r="1.8" fill="#E2E8F0" style="animation-delay:0.7s" />
+            <circle class="particle-dot" cx="85" cy="28" r="1.6" fill="#FFFFFF" style="animation-delay:0.85s" />
+            <circle class="particle-dot" cx="158" cy="30" r="2.0" fill="#FFFFFF" style="animation-delay:0.2s" />
+            <circle class="particle-dot" cx="22" cy="106" r="1.5" fill="#CBD5E1" style="animation-delay:0.6s" />
+            <circle class="particle-dot" cx="218" cy="110" r="1.6" fill="#E2E8F0" style="animation-delay:0.35s" />
+            <circle class="particle-dot" cx="58" cy="168" r="1.7" fill="#FFFFFF" style="animation-delay:0.95s" />
+            <circle class="particle-dot" cx="184" cy="166" r="1.8" fill="#FFFFFF" style="animation-delay:0.55s" />
+          </g>
+
+          <!-- 4. Ground Shadow -->
+          <ellipse class="mochi-floor-shadow" cx="120" cy="194" rx="52" ry="8.5" fill="url(#mochi-shadow-grad)" />
+
+          <!-- 5. Floating & Breathing Wrapper -->
+          <g class="mochi-float-group">
+            <g class="mochi-pose-group">
+
+              <!-- 6. Main Squircle Body (n = 2.7) -->
+              <g clip-path="url(#mochi-body-clip)">
+                <use href="#mochi-squircle-path" fill="url(#mochi-base-grad)" />
+                <rect class="tint-blue" x="35" y="40" width="170" height="135" fill="url(#mochi-tint-blue)" />
+                <rect class="tint-purple" x="35" y="40" width="170" height="135" fill="url(#mochi-tint-purple)" />
+                <rect class="tint-amber" x="35" y="40" width="170" height="135" fill="url(#mochi-tint-amber)" />
+                <rect class="tint-slate" x="35" y="40" width="170" height="135" fill="url(#mochi-tint-slate)" />
+                <use href="#mochi-squircle-path" fill="url(#mochi-specular-grad)" />
+              </g>
+
+              <!-- 7. Floating Spherical Hands -->
+              <g class="mochi-hands-group">
+                <circle class="mochi-hand-left" cx="38" cy="148" r="15.5" fill="url(#mochi-hand-grad)" />
+                <circle class="mochi-hand-right" cx="201" cy="86" r="15.5" fill="url(#mochi-hand-grad)" />
+              </g>
+
+              <!-- 8. Face Group (Cheek Blush + Eyes on a Sphere) -->
+              <g class="mochi-face-group">
+                <g class="mochi-blush-group">
+                  <ellipse cx="76" cy="121" rx="14" ry="6.5" fill="url(#mochi-blush-grad)" />
+                  <ellipse cx="164" cy="121" rx="14" ry="6.5" fill="url(#mochi-blush-grad)" />
+                </g>
+
+                <g class="mochi-eye-left">
+                  <ellipse class="eye-dot" cx="95" cy="114" rx="8.4" ry="9.5" fill="#181619" />
+                  <path class="eye-happy-arc" d="M 83 114 C 87 102, 103 102, 107 114" fill="none" stroke="#181619" stroke-width="6.5" stroke-linecap="round" />
+                  <line class="eye-flat-line" x1="85" y1="115" x2="105" y2="115" stroke="#181619" stroke-width="5.5" stroke-linecap="round" />
+                  <path class="eye-sleepy-arc" d="M 85 112 C 89 120, 101 120, 105 112" fill="none" stroke="#181619" stroke-width="5.5" stroke-linecap="round" />
+                </g>
+
+                <g class="mochi-eye-right">
+                  <ellipse class="eye-dot" cx="145" cy="114" rx="8.4" ry="9.5" fill="#181619" />
+                  <path class="eye-happy-arc" d="M 133 114 C 137 102, 153 102, 157 114" fill="none" stroke="#181619" stroke-width="6.5" stroke-linecap="round" />
+                  <line class="eye-flat-line" x1="135" y1="115" x2="155" y2="115" stroke="#181619" stroke-width="5.5" stroke-linecap="round" />
+                  <path class="eye-sleepy-arc" d="M 135 112 C 139 120, 151 120, 155 112" fill="none" stroke="#181619" stroke-width="5.5" stroke-linecap="round" />
+                </g>
+              </g>
+
+              <!-- 9. Top-Left Expression Badge (-0.72R, -0.72R) -->
+              <g class="mochi-badge-group">
+                <g class="badge-pill-shape">
+                  <rect class="badge-pill-bg" x="42" y="42" width="52" height="28" rx="14" fill="#2589FF" stroke="#0B0C10" stroke-width="5" />
+                  <circle class="badge-dot-1" cx="55" cy="56" r="4.2" fill="#FFFFFF" />
+                  <circle class="badge-dot-2" cx="68" cy="56" r="3.4" fill="#FFFFFF" />
+                  <circle class="badge-dot-3" cx="81" cy="56" r="3.4" fill="#FFFFFF" />
+                </g>
+                <g class="badge-circle-shape">
+                  <circle class="badge-circle-bg" cx="68" cy="56" r="18" fill="#F59E0B" stroke="#0B0C10" stroke-width="5" />
+                  <rect x="65.8" y="45.5" width="4.4" height="12" rx="2.2" fill="#FFFFFF" />
+                  <circle cx="68" cy="63" r="2.4" fill="#FFFFFF" />
+                </g>
+              </g>
+
+            </g>
+          </g>
+        </svg>
+      `;
+    }
+
+    const mainContainer = document.getElementById("main-mochi-container");
+    const switcherGrid = document.getElementById("state-switcher-buttons");
+    const notifGrid = document.getElementById("notif-switcher-buttons");
+    const allStatesGrid = document.getElementById("all-states-grid");
+    const hudStateLabel = document.getElementById("hud-state-label");
+    const hudMicroLabel = document.getElementById("hud-micro-label");
+    const captionBox = document.getElementById("stage-caption-text");
+    const extMicIndicator = document.getElementById("external-mic-indicator");
+    const extMicText = document.getElementById("external-mic-text");
+    const audioSlider = document.getElementById("audio-level-slider");
+
+    mainContainer.innerHTML = createMochiSVG("idle");
+    const mainSvg = mainContainer.querySelector(".mochi-svg");
+
+    let currentState = "idle";
+    let autoSpeakInterval = null;
+    let gentleReturnTimer = null;
+
+    function prefersReducedMotion() {
+      return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+
+    function motionIsSuppressed() {
+      return prefersReducedMotion() ||
+        document.body.classList.contains("reduced-motion") ||
+        document.body.classList.contains("quiet-mode") ||
+        document.body.classList.contains("compact-preview") ||
+        document.hidden;
+    }
+
+    function updateExternalMicUI(micMode) {
+      extMicIndicator.setAttribute("data-mic", micMode);
+      if (micMode === "active") {
+        extMicText.textContent = "المايك: نشط / بيسمع (Active)";
+      } else if (micMode === "prompt") {
+        extMicText.textContent = "المايك: ينتظر الإذن (Prompt)";
+      } else {
+        extMicText.textContent = "المايك: متوقف (Off)";
+      }
+    }
+
+    function setMainState(newState, customCaption = null) {
+      if (gentleReturnTimer) {
+        clearTimeout(gentleReturnTimer);
+        gentleReturnTimer = null;
+      }
+
+      currentState = newState;
+      mainSvg.setAttribute("data-state", newState);
+      mainSvg.classList.remove("micro-blink", "micro-wink", "micro-look-left", "micro-look-right", "micro-sigh", "micro-jelly", "micro-happy");
+      hudStateLabel.textContent = `STATE: ${newState}`;
+
+      const stateObj = MOCHI_STATES.find((s) => s.id === newState) || MOCHI_STATES[0];
+      captionBox.textContent = customCaption || stateObj.caption;
+      updateExternalMicUI(customCaption ? "off" : stateObj.mic);
+      mainContainer.setAttribute("aria-label", `Mochi: ${stateObj.ar}. المس لمحاكاة بدء الاستماع أو إيقافه.`);
+      mainContainer.setAttribute("aria-pressed", ["listening", "hearing", "followup", "interrupted"].includes(newState) && !customCaption ? "true" : "false");
+
+      document.querySelectorAll(".state-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.state === newState && !customCaption);
+      });
+
+      if (!customCaption) {
+        document.querySelectorAll(".notif-btn").forEach((b) => b.classList.remove("active"));
+      }
+
+      if (newState === "speaking") {
+        mainSvg.style.setProperty("--audio-level", audioSlider.value);
+      } else {
+        mainSvg.style.setProperty("--audio-level", 0);
+      }
+    }
+
+    // Build buttons and visual previews for all 33 character states
+    MOCHI_STATES.forEach((st) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `state-btn ${st.id === "idle" ? "active" : ""}`;
+      btn.dataset.state = st.id;
+      btn.setAttribute("aria-label", `عرض حالة Mochi: ${st.ar} (${st.id})`);
+      btn.innerHTML = `<span>${st.ar}</span><span class="en">${st.id}</span>`;
+      btn.addEventListener("click", () => setMainState(st.id));
+      switcherGrid.appendChild(btn);
+
+      const cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = "grid-cell";
+      cell.setAttribute("aria-label", `عرض حالة Mochi: ${st.ar} (${st.id})`);
+      cell.innerHTML = `
+        <span class="grid-cell-viewport">${createMochiSVG(st.id, true)}</span>
+        <span class="grid-cell-meta">
+          <span class="ar-name">${st.ar}</span>
+          <span class="en-code">${st.id}</span>
+        </span>
+      `;
+      cell.addEventListener("click", () => {
+        setMainState(st.id);
+        window.scrollTo({ top: 0, behavior: motionIsSuppressed() ? "auto" : "smooth" });
+      });
+      allStatesGrid.appendChild(cell);
+    });
+
+    // Build 6 Notification UX State Buttons
+    NOTIFICATION_STATES.forEach((nf) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "notif-btn";
+      btn.innerHTML = `<span>🔔 ${nf.notifId}</span><span class="en">→ ${nf.mappedState}</span>`;
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".notif-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        setMainState(nf.mappedState, nf.caption);
+        hudStateLabel.textContent = `NOTIF: ${nf.notifId} (→ ${nf.mappedState})`;
+
+        if (nf.micro) {
+          setTimeout(() => triggerMicroExpression(nf.micro), 120);
+        }
+        if (nf.TransitionToIdleAfter) {
+          gentleReturnTimer = setTimeout(() => {
+            setMainState("idle");
+            hudStateLabel.textContent = `NOTIF: ${nf.notifId} (settled to idle)`;
+          }, nf.TransitionToIdleAfter);
+        }
+      });
+      notifGrid.appendChild(btn);
+    });
+
+    // Character activation is a visual simulation only; it does not request or capture microphone audio.
+    function activateMochiPreview() {
+      if (currentState === "speaking") {
+        setMainState("interrupted");
+        hudMicroLabel.textContent = "EVENT: مقاطعة بلمسة ← محاكاة الانتقال إلى Listening";
+        setTimeout(() => {
+          if (currentState === "interrupted") setMainState("listening");
+        }, 360);
+        return;
+      }
+      if (["listening", "hearing", "followup", "interrupted"].includes(currentState)) {
+        setMainState("paused");
+        hudMicroLabel.textContent = "EVENT: محاكاة إيقاف المايك — لا يوجد التقاط صوت فعلي في هذه الصفحة";
+        return;
+      }
+      setMainState("listening");
+      hudMicroLabel.textContent = "EVENT: محاكاة بدء الاستماع — لا يوجد التقاط صوت فعلي في هذه الصفحة";
+    }
+
+    mainContainer.addEventListener("click", activateMochiPreview);
+    mainContainer.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        activateMochiPreview();
+      }
+    });
+
+    // Micro-expressions engine
+    function triggerMicroExpression(type) {
+      if (motionIsSuppressed()) return;
+      hudMicroLabel.textContent = `MICRO TRIGGERED: ${type}`;
+
+      mainSvg.classList.remove(
+        "micro-blink",
+        "micro-wink",
+        "micro-look-left",
+        "micro-look-right",
+        "micro-sigh",
+        "micro-jelly",
+        "micro-happy"
+      );
+
+      if (type === "double-blink") {
+        mainSvg.classList.add("micro-blink");
+        setTimeout(() => mainSvg.classList.remove("micro-blink"), 90);
+        setTimeout(() => mainSvg.classList.add("micro-blink"), 180);
+        setTimeout(() => mainSvg.classList.remove("micro-blink"), 270);
+      } else if (type === "wink") {
+        mainSvg.classList.add("micro-wink");
+        setTimeout(() => mainSvg.classList.remove("micro-wink"), 980);
+      } else if (type === "look-lr") {
+        mainSvg.classList.add("micro-look-left");
+        setTimeout(() => {
+          mainSvg.classList.remove("micro-look-left");
+          mainSvg.classList.add("micro-look-right");
+        }, 700);
+        setTimeout(() => mainSvg.classList.remove("micro-look-right"), 1500);
+      } else if (type === "sigh") {
+        mainSvg.classList.add("micro-sigh");
+        setTimeout(() => mainSvg.classList.remove("micro-sigh"), 1400);
+      } else if (type === "jelly") {
+        mainSvg.classList.add("micro-jelly");
+        setTimeout(() => mainSvg.classList.remove("micro-jelly"), 320);
+      } else if (type === "micro-happy") {
+        mainSvg.classList.add("micro-happy");
+        setTimeout(() => mainSvg.classList.remove("micro-happy"), 1200);
+      }
+    }
+
+    document.querySelectorAll(".micro-btn[data-micro]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        setMainState("idle");
+        triggerMicroExpression(btn.dataset.micro);
+      });
+    });
+
+    // Autonomous Idle Loop (5 to 10 seconds)
+    function scheduleNextIdleMicro() {
+      const delay = 5000 + Math.random() * 4800;
+      setTimeout(() => {
+        if (currentState === "idle" && !motionIsSuppressed()) {
+          // 20 tickets approximate the documented weights: 35/25/15/10/10/5.
+          const weightedPool = [
+            "double-blink", "double-blink", "double-blink", "double-blink", "double-blink", "double-blink", "double-blink",
+            "look-lr", "look-lr", "look-lr", "look-lr", "look-lr",
+            "sigh", "sigh", "sigh",
+            "wink", "wink",
+            "jelly", "jelly",
+            "micro-happy"
+          ];
+          const pick = weightedPool[Math.floor(Math.random() * weightedPool.length)];
+          triggerMicroExpression(pick);
+        }
+        scheduleNextIdleMicro();
+      }, delay);
+    }
+    scheduleNextIdleMicro();
+
+    // Cursor / Touch Following (Disabled automatically in Compact & Reduced Motion modes)
+    const stageCard = document.getElementById("interactive-stage");
+    const cursorToggle = document.getElementById("toggle-cursor-follow");
+    const faceGroup = mainSvg.querySelector(".mochi-face-group");
+    const poseGroup = mainSvg.querySelector(".mochi-pose-group");
+
+    stageCard.addEventListener("pointermove", (e) => {
+      if (
+        !cursorToggle.checked ||
+        document.body.classList.contains("reduced-motion") ||
+        document.body.classList.contains("compact-preview") ||
+        document.body.classList.contains("quiet-mode") ||
+        document.hidden || prefersReducedMotion()
+      ) {
+        return;
+      }
+      if (currentState !== "idle" && currentState !== "listening" && currentState !== "followup") return;
+
+      const rect = stageCard.getBoundingClientRect();
+      const normX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      const normY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+
+      const eyeX = Math.max(-8, Math.min(8, normX * 8));
+      const eyeY = Math.max(-5, Math.min(5, normY * 5));
+      const bodyTilt = Math.max(-2.5, Math.min(2.5, normX * 2.5));
+
+      faceGroup.style.transform = `translate3d(${eyeX.toFixed(1)}px, ${eyeY.toFixed(1)}px, 0)`;
+      poseGroup.style.transform = `rotate(${bodyTilt.toFixed(1)}deg)`;
+    });
+
+    stageCard.addEventListener("pointerleave", () => {
+      faceGroup.style.transform = "";
+      poseGroup.style.transform = "";
+    });
+
+    // Audio Level Slider & Live Speech Simulator
+    audioSlider.addEventListener("input", (e) => {
+      if (currentState !== "speaking") setMainState("speaking");
+      mainSvg.style.setProperty("--audio-level", e.target.value);
+    });
+
+    const btnAutoSpeak = document.getElementById("btn-auto-speak");
+    btnAutoSpeak.addEventListener("click", () => {
+      if (autoSpeakInterval) {
+        clearInterval(autoSpeakInterval);
+        autoSpeakInterval = null;
+        btnAutoSpeak.textContent = "تشغيل محاكاة كلام حيّ";
+        mainSvg.style.setProperty("--audio-level", audioSlider.value);
+        return;
+      }
+      setMainState("speaking");
+      btnAutoSpeak.textContent = "إيقاف محاكاة الكلام";
+      autoSpeakInterval = setInterval(() => {
+        if (currentState !== "speaking") {
+          clearInterval(autoSpeakInterval);
+          autoSpeakInterval = null;
+          btnAutoSpeak.textContent = "تشغيل محاكاة كلام حيّ";
+          return;
+        }
+        const level = (Math.sin(Date.now() / 85) * 0.4 + 0.5 * Math.random() + 0.1).toFixed(2);
+        const clamped = Math.max(0, Math.min(1, level));
+        audioSlider.value = clamped;
+        mainSvg.style.setProperty("--audio-level", clamped);
+      }, 75);
+    });
+
+    // Top Toggles (Compact Variant, Reduced Motion, Quiet Mode)
+    document.getElementById("toggle-compact-mode").addEventListener("change", (e) => {
+      document.body.classList.toggle("compact-preview", e.target.checked);
+      faceGroup.style.transform = "";
+      poseGroup.style.transform = "";
+    });
+
+    document.getElementById("toggle-reduced-motion").addEventListener("change", (e) => {
+      document.body.classList.toggle("reduced-motion", e.target.checked);
+    });
+
+    document.getElementById("toggle-quiet-mode").addEventListener("change", (e) => {
+      document.body.classList.toggle("quiet-mode", e.target.checked);
+    });
+
+    // Approximate requestAnimationFrame cadence indicator; not a full rendering-performance benchmark.
+    const fpsBadge = document.getElementById("hud-fps-counter");
+    let frameCount = 0;
+    let lastFpsTime = performance.now();
+
+    function measureFrameRate(now) {
+      frameCount++;
+      const elapsed = now - lastFpsTime;
+      if (elapsed >= 500) {
+        const fps = Math.min(60, Math.round((frameCount * 1000) / elapsed));
+        fpsBadge.textContent = `RAF ~${fps}`;
+        fpsBadge.style.color = fps >= 52 ? "#34d399" : fps >= 40 ? "#fbbf24" : "#f87171";
+        frameCount = 0;
+        lastFpsTime = now;
+      }
+      requestAnimationFrame(measureFrameRate);
+    }
+    requestAnimationFrame(measureFrameRate);
+  </script>
+</body>
+</html>
