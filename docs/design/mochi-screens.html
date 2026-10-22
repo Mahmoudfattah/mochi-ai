@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mochi AI — Phase 4 Screen Layouts & Design System Reference</title>
+  <style>
+    /* ==========================================================================
+       1. DESIGN SYSTEM TOKENS (Inline from tokens.css)
+       ========================================================================== */
+    :root {
+      --color-bg-canvas: #0b0c10;
+      --color-bg-stage-glow: #171a24;
+      --color-surface-card: rgba(20, 23, 32, 0.95);
+      --color-surface-elevated: #1c202c;
+      --color-surface-hover: #252a3a;
+      --color-surface-caption: rgba(17, 19, 26, 0.94);
+      --color-surface-transcript: rgba(56, 152, 255, 0.09);
+
+      --color-text-primary: #f8fafc;
+      --color-text-secondary: #cbd5e1;
+      --color-text-muted: #94a3b8;
+      --color-text-on-accent: #0b0c10;
+
+      --color-border-subtle: rgba(255, 255, 255, 0.08);
+      --color-border-strong: rgba(255, 255, 255, 0.18);
+      --color-border-transcript: rgba(56, 152, 255, 0.5);
+      --color-focus-ring: #60a5fa;
+
+      --color-semantic-active: #3898ff;
+      --color-semantic-thinking: #a78bfa;
+      --color-semantic-confirm: #2dd4bf;
+      --color-semantic-caution: #f59e0b;
+      --color-semantic-offline: #64748b;
+
+      --font-sans: "IBM Plex Sans Arabic", "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Arabic", sans-serif;
+      --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --radius-pill: 9999px;
+
+      --shadow-card: 0 14px 32px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--color-border-subtle);
+      --shadow-floating-pill: 0 6px 16px -2px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--color-border-strong);
+
+      --ease-mochi-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-mochi-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-sheet-glide: cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    body[data-theme="light"] {
+      --color-bg-canvas: #f4f1ea;
+      --color-bg-stage-glow: #eae5d9;
+      --color-surface-card: rgba(255, 255, 255, 0.96);
+      --color-surface-elevated: #ece8df;
+      --color-surface-hover: #e2ddd2;
+      --color-surface-caption: rgba(24, 22, 25, 0.94);
+      --color-surface-transcript: rgba(29, 78, 216, 0.08);
+      --color-text-primary: #181619;
+      --color-text-secondary: #475569;
+      --color-text-muted: #64748b;
+      --color-border-subtle: rgba(24, 22, 25, 0.09);
+      --color-border-strong: rgba(24, 22, 25, 0.18);
+      --shadow-card: 0 14px 28px -8px rgba(24, 22, 25, 0.12), 0 0 0 1px rgba(24, 22, 25, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #07080b;
+      color: #f1f5f9;
+      font-family: var(--font-sans);
+      line-height: 1.55;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* English technical terms BiDi isolation rule */
+    .en-term, code, .tabular-time {
+      unicode-bidi: isolate;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tabular-time {
+      font-family: var(--font-mono);
+      direction: ltr;
+      display: inline-block;
+    }
+
+    /* ==========================================================================
+       2. SHOWCASE SHELL & CONTROLS BAR
+       ========================================================================== */
+    .shell-container {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .fidelity-banner {
+      background: rgba(45, 212, 191, 0.08);
+      border: 1px solid rgba(45, 212, 191, 0.28);
+      border-radius: 14px;
+      padding: 11px 16px;
+      margin-bottom: 16px;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+    }
+
+    .fidelity-banner strong {
+      color: #5eead4;
+    }
+
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .top-bar h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .top-bar-toggles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .pill-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: #13161f;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #e2e8f0;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .pill-toggle input {
+      accent-color: var(--color-semantic-active);
+      cursor: pointer;
+    }
+
+    /* Screen Switcher Strip */
+    .screen-switcher {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .screen-tab {
+      background: #12151e;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      color: #cbd5e1;
+      padding: 8px 11px;
+      border-radius: 12px;
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      text-align: right;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .screen-tab span.sub {
+      font-size: 0.68rem;
+      color: #64748b;
+      font-family: var(--font-mono);
+      direction: ltr;
+      text-align: left;
+    }
+
+    .screen-tab:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+
+    .screen-tab.active {
+      background: rgba(56, 152, 255, 0.16);
+      border-color: var(--color-semantic-active);
+      color: #fff;
+      box-shadow: 0 0 0 1px var(--color-semantic-active) inset;
+    }
+
+    /* Dual Device Frames Container (380px Phone + Desktop Side by Side) */
+    .devices-stage {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1180px) {
+      .devices-stage {
+        grid-template-columns: 1fr;
+        justify-items: center;
+      }
+    }
+
+    .device-column {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .device-label {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 6px;
+    }
+
+    /* 380px Galaxy A51 Class Phone Frame */
+    .phone-frame {
+      width: 380px;
+      height: 760px;
+      background: radial-gradient(circle at 50% 42%, var(--color-bg-stage-glow) 0%, var(--color-bg-canvas) 74%);
+      border: 10px solid #1e222d;
+      border-radius: 44px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
+    }
+
+    /* Subtle punch-hole camera for Galaxy A51 realism */
+    .phone-punch-hole {
+      width: 12px;
+      height: 12px;
+      background: #000;
+      border-radius: 50%;
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    /* Desktop Laptop Frame */
+    .desktop-frame {
+      width: 100%;
+      min-height: 760px;
+      background: radial-gradient(circle at 55% 45%, var(--color-bg-stage-glow) 0%, var(--color-bg-canvas) 72%);
+      border: 8px solid #1e222d;
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+    }
+
+    /* ==========================================================================
+       3. IN-APP UI COMPONENTS AROUND MOCHI (NO HEADER, NO NAVBAR)
+       ========================================================================== */
+    .app-viewport {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 28px 16px 20px;
+      color: var(--color-text-primary);
+    }
+
+    .desktop-frame .app-viewport {
+      padding: 32px 40px;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    /* 3.1 Separate Functional Mic Indicator (Top-Right in RTL) */
+    .mic-indicator-pill {
+      position: absolute;
+      top: 26px;
+      right: 16px;
+      z-index: 25;
+      min-height: 38px;
+      padding: 6px 13px;
+      border-radius: var(--radius-pill);
+      background: var(--color-surface-card);
+      border: 1.5px solid var(--color-border-strong);
+      box-shadow: var(--shadow-floating-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--color-text-primary);
+      cursor: pointer;
+      transition: transform 150ms ease, border-color 200ms ease, background 200ms ease;
+    }
+
+    .desktop-frame .mic-indicator-pill {
+      top: 28px;
+      right: 32px;
+    }
+
+    .mic-indicator-pill:hover {
+      transform: translateY(-1px);
+    }
+
+    .mic-indicator-pill:focus-visible {
+      outline: 2px solid var(--color-focus-ring);
+      outline-offset: 2px;
+    }
+
+    .mic-shape-cue {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Mic States Styling (Color + Shape + Icon + Text) */
+    .mic-indicator-pill[data-mic-state="off"] {
+      border-color: var(--color-border-strong);
+      color: var(--color-text-secondary);
+    }
+
+    .mic-indicator-pill[data-mic-state="listening"] {
+      background: rgba(56, 152, 255, 0.16);
+      border-color: var(--color-semantic-active);
+      color: #ffffff;
+      box-shadow: 0 0 0 1px var(--color-semantic-active) inset, var(--shadow-floating-pill);
+    }
+
+    .mic-indicator-pill[data-mic-state="paused"] {
+      background: rgba(100, 116, 139, 0.18);
+      border-style: dashed;
+      border-color: var(--color-semantic-offline);
+    }
+
+    .mic-indicator-pill[data-mic-state="permission"],
+    .mic-indicator-pill[data-mic-state="unavailable"] {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: var(--color-semantic-caution);
+      color: #fde68a;
+    }
+
+    /* 3.2 Center Stage (Mochi + Captions) */
+    .mochi-stage-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      transition: all 300ms var(--ease-sheet-glide);
+      z-index: 10;
+    }
+
+    /* When an Overlay is open on Mobile, Mochi shrinks to Compact Variant (96x88px) at Top */
+    .app-viewport.has-overlay .mochi-stage-column {
+      flex: 0 0 auto;
+      padding-top: 34px;
+      padding-bottom: 6px;
+    }
+
+    .desktop-frame .app-viewport.has-overlay .mochi-stage-column {
+      flex: 0 0 340px;
+      padding-top: 0;
+    }
+
+    .mochi-character-box {
+      width: 256px;
+      height: 234px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: width 300ms var(--ease-mochi-smooth), height 300ms var(--ease-mochi-smooth);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .desktop-frame .mochi-character-box {
+      width: 300px;
+      height: 274px;
+    }
+
+    /* Compact Size (96x88px on Phone, 156x142px on Desktop) */
+    .app-viewport.has-overlay .mochi-character-box {
+      width: 96px;
+      height: 88px;
+    }
+
+    .desktop-frame .app-viewport.has-overlay .mochi-character-box {
+      width: 156px;
+      height: 142px;
+    }
+
+    .compact-return-hint {
+      font-size: 0.72rem;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+      display: none;
+    }
+
+    .app-viewport.has-overlay .compact-return-hint {
+      display: block;
+    }
+
+    /* 3.3 Captions & Recognized Speech Bubbles */
+    .captions-stack {
+      width: 100%;
+      max-width: 344px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .desktop-frame .captions-stack {
+      max-width: 480px;
+    }
+
+    /* User Recognized Speech Bubble (Dashed border, temporary look) */
+    .user-transcript-bubble {
+      width: 100%;
+      background: var(--color-surface-transcript);
+      border: 1.5px dashed var(--color-border-transcript);
+      border-radius: var(--radius-lg);
+      padding: 10px 16px;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #e0f2fe;
+      text-align: center;
+      animation: bubbleEnter 220ms var(--ease-mochi-smooth);
+    }
+
+    .transcript-meta {
+      font-size: 0.74rem;
+      color: var(--color-text-muted);
+      margin-top: 4px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    /* Mochi Reply Bubble */
+    .mochi-reply-bubble {
+      width: 100%;
+      background: var(--color-surface-caption);
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      font-size: 1.08rem;
+      font-weight: 500;
+      line-height: 1.65;
+      color: #f8fafc;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+      max-height: 132px;
+      overflow-y: auto;
+      animation: bubbleEnter 220ms var(--ease-mochi-smooth);
+    }
+
+    /* Subtle Affordance for Hidden Typing Fallback */
+    .subtle-typing-trigger {
+      margin-top: 6px;
+      background: transparent;
+      border: none;
+      color: var(--color-text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.76rem;
+      opacity: 0.65;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      transition: opacity 150ms, background 150ms;
+    }
+
+    .subtle-typing-trigger:hover,
+    .subtle-typing-trigger:focus-visible {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.06);
+      outline: none;
+    }
+
+    /* 3.4 Hidden Typing Fallback Bar */
+    .typing-fallback-bar {
+      width: 100%;
+      max-width: 348px;
+      background: var(--color-surface-elevated);
+      border: 1.5px solid var(--color-semantic-active);
+      border-radius: var(--radius-lg);
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-card);
+      margin: 8px auto 0;
+      animation: sheetEnter 200ms ease-out;
+    }
+
+    .desktop-frame .typing-fallback-bar {
+      max-width: 480px;
+    }
+
+    .typing-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--color-text-primary);
+      font-family: var(--font-sans);
+      font-size: 1rem; /* 16px prevents iOS/Android auto-zoom */
+      padding: 6px 8px;
+      outline: none;
+    }
+
+    .typing-send-btn {
+      background: var(--color-semantic-active);
+      color: #0b0c10;
+      border: none;
+      border-radius: 14px;
+      min-width: 44px;
+      min-height: 40px;
+      padding: 0 12px;
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+
+    .typing-close-btn {
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--color-text-secondary);
+      border: none;
+      border-radius: 12px;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    /* 3.5 Overlays & Confirmation Card Container */
+    .overlay-sheet {
+      width: 100%;
+      background: var(--color-surface-card);
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-xl);
+      padding: 18px 16px;
+      box-shadow: var(--shadow-card);
+      z-index: 20;
+      max-height: 490px;
+      overflow-y: auto;
+      animation: sheetEnter 280ms var(--ease-sheet-glide);
+    }
+
+    .desktop-frame .overlay-sheet {
+      flex: 0 1 450px;
+      max-height: 640px;
+      padding: 22px 24px;
+    }
+
+    .overlay-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+
+    .overlay-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .overlay-close-btn {
+      min-width: 44px;
+      min-height: 36px;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-elevated);
+      border: 1px solid var(--color-border-subtle);
+      color: var(--color-text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.76rem;
+      cursor: pointer;
+    }
+
+    /* Schedule Change Confirmation Card */
+    .confirm-diff-box {
+      background: var(--color-surface-elevated);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      margin: 12px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .diff-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+    }
+
+    .diff-old {
+      color: var(--color-text-muted);
+      text-decoration: line-through;
+    }
+
+    .diff-new {
+      color: var(--color-semantic-confirm);
+      font-weight: 600;
+    }
+
+    .action-buttons-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn-primary-confirm {
+      min-height: 44px;
+      background: var(--color-semantic-confirm);
+      color: #0b0c10;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-secondary-cancel {
+      min-height: 44px;
+      background: var(--color-surface-elevated);
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.84rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* Timeline & Roadmap Rows */
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .task-item {
+      background: var(--color-surface-elevated);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .task-item.current {
+      border-color: var(--color-semantic-active);
+      background: rgba(56, 152, 255, 0.1);
+    }
+
+    .task-item.done {
+      opacity: 0.62;
+    }
+
+    .task-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .task-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .task-sub {
+      font-size: 0.76rem;
+      color: var(--color-text-secondary);
+    }
+
+    .status-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+    }
+
+    .tag-done { background: rgba(45, 212, 191, 0.15); color: #5eead4; }
+    .tag-active { background: rgba(56, 152, 255, 0.2); color: #93c5fd; }
+    .tag-upcoming { background: rgba(255, 255, 255, 0.07); color: var(--color-text-secondary); }
+    .tag-moved { background: rgba(245, 158, 11, 0.14); color: #fcd34d; }
+
+    /* Focus Timer Display */
+    .focus-timer-box {
+      text-align: center;
+      padding: 8px 0 12px;
+    }
+
+    .timer-digits {
+      font-family: var(--font-mono);
+      font-size: 2.75rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: var(--color-text-primary);
+      line-height: 1.1;
+      margin: 6px 0;
+    }
+
+    .progress-bar-track {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--color-semantic-active);
+      border-radius: 999px;
+    }
+
+    /* Notification Settings Rows */
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 10px;
+      background: var(--color-surface-elevated);
+      border-radius: var(--radius-md);
+      margin-bottom: 7px;
+      font-size: 0.84rem;
+    }
+
+    .switch-pill {
+      width: 44px;
+      height: 24px;
+      border-radius: 999px;
+      background: #334155;
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .switch-pill.on {
+      background: var(--color-semantic-confirm);
+    }
+
+    .switch-pill::after {
+      content: "";
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      transition: transform 150ms ease;
+    }
+
+    .switch-pill.on::after {
+      transform: translateX(20px);
+    }
+
+    @keyframes bubbleEnter {
+      from { opacity: 0; transform: translateY(8px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes sheetEnter {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       4. APPROVED PHASE 3 MOCHI SVG ENGINE (UNCHANGED)
+       ========================================================================== */
+    .mochi-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      --glow-opacity: 0.08;
+      --blush-opacity: 0.12;
+      --badge-opacity: 0;
+      --badge-scale: 0.5;
+      --hands-opacity: 0;
+      --orbit-opacity: 0;
+      --ripple-opacity: 0;
+      --breath-duration: 4s;
+    }
+
+    @keyframes mochiFloat {
+      0%, 100% { transform: translate3d(0, 0px, 0) scale(1, 1); }
+      50% { transform: translate3d(0, -6px, 0) scale(1.018, 0.985); }
+    }
+
+    @keyframes mochiFloatCompact {
+      0%, 100% { transform: translate3d(0, 0px, 0) scale(1, 1); }
+      50% { transform: translate3d(0, -2.5px, 0) scale(1.01, 0.99); }
+    }
+
+    @keyframes badgeDotsPulse {
+      0%, 100% { opacity: 0.35; transform: scale(0.88); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+
+    @keyframes rippleWave {
+      0% { transform: scale(0.86); opacity: 0.45; }
+      100% { transform: scale(1.36); opacity: 0; }
+    }
+
+    .mochi-float-group { animation: mochiFloat var(--breath-duration) ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+    .mochi-pose-group, .mochi-face-group, .mochi-badge-group { transition: transform 300ms var(--ease-mochi-smooth), opacity 280ms ease; transform-box: fill-box; transform-origin: center; }
+    .mochi-ambient-glow { opacity: var(--glow-opacity); }
+    .mochi-blush-group { opacity: var(--blush-opacity); }
+    .mochi-badge-group { opacity: var(--badge-opacity); transform: scale(var(--badge-scale)); transform-origin: 68px 56px; }
+    .mochi-orbit-ring { opacity: var(--orbit-opacity); }
+    .mochi-ripple-ring { opacity: var(--ripple-opacity); transform-origin: 120px 108px; }
+
+    .eye-dot { opacity: 1; }
+    .eye-happy-arc, .eye-flat-line, .eye-sleepy-arc { opacity: 0; }
+    .badge-pill-shape { opacity: 1; }
+    .badge-circle-shape { opacity: 0; }
+    .tint-blue, .tint-purple, .tint-amber, .tint-slate { opacity: 0; transition: opacity 300ms ease; }
+
+    .badge-dot-1 { animation: badgeDotsPulse 1.2s ease-in-out infinite 0s; transform-box: fill-box; transform-origin: center; }
+    .badge-dot-2 { animation: badgeDotsPulse 1.2s ease-in-out infinite 0.2s; transform-box: fill-box; transform-origin: center; }
+    .badge-dot-3 { animation: badgeDotsPulse 1.2s ease-in-out infinite 0.4s; transform-box: fill-box; transform-origin: center; }
+
+    /* Approved State Hooks */
+    .mochi-svg[data-state="listening"], .mochi-svg[data-state="hearing"] {
+      --glow-opacity: 0.4; --blush-opacity: 0.5; --badge-opacity: 1; --badge-scale: 1; --ripple-opacity: 1; --breath-duration: 1.8s;
+    }
+    .mochi-svg[data-state="listening"] .tint-blue, .mochi-svg[data-state="hearing"] .tint-blue { opacity: 0.9; }
+    .mochi-svg[data-state="hearing"] .mochi-ripple-ring { animation: rippleWave 1.6s ease-out infinite; }
+
+    .mochi-svg[data-state="thinking"] {
+      --glow-opacity: 0.36; --blush-opacity: 0.42; --badge-opacity: 1; --badge-scale: 1; --orbit-opacity: 0.55;
+    }
+    .mochi-svg[data-state="thinking"] .tint-purple { opacity: 0.88; }
+    .mochi-svg[data-state="thinking"] .badge-pill-bg { fill: #7c3aed; }
+
+    .mochi-svg[data-state="speaking"] {
+      --glow-opacity: 0.38; --blush-opacity: 0.5; --ripple-opacity: 0.75; --breath-duration: 0.9s;
+    }
+    .mochi-svg[data-state="speaking"] .tint-blue { opacity: 0.45; }
+    .mochi-svg[data-state="speaking"] .mochi-ripple-ring { animation: rippleWave 1.3s ease-out infinite; }
+
+    .mochi-svg[data-state="proud"] { --glow-opacity: 0.22; --blush-opacity: 0.45; }
+    .mochi-svg[data-state="proud"] .eye-dot { opacity: 0; }
+    .mochi-svg[data-state="proud"] .eye-happy-arc { opacity: 1; }
+
+    .mochi-svg[data-state="curious"] { --glow-opacity: 0.24; --blush-opacity: 0.38; }
+    .mochi-svg[data-state="curious"] .tint-blue { opacity: 0.35; }
+    .mochi-svg[data-state="curious"] .mochi-pose-group { transform: rotate(5deg); }
+
+    .mochi-svg[data-state="focus"] { --glow-opacity: 0.04; --blush-opacity: 0.2; --breath-duration: 6s; }
+    .mochi-svg[data-state="paused"] .eye-dot { opacity: 0; }
+    .mochi-svg[data-state="paused"] .eye-flat-line { opacity: 1; }
+
+    .mochi-svg[data-state="error"] {
+      --glow-opacity: 0.34; --blush-opacity: 0.55; --badge-opacity: 1; --badge-scale: 1; --orbit-opacity: 0.45;
+    }
+    .mochi-svg[data-state="error"] .tint-amber { opacity: 0.9; }
+    .mochi-svg[data-state="error"] .badge-pill-shape { opacity: 0; }
+    .mochi-svg[data-state="error"] .badge-circle-shape { opacity: 1; }
+    .mochi-svg[data-state="error"] .mochi-pose-group { transform: rotate(-2.5deg); }
+
+    .mochi-svg[data-state="offline"] {
+      --glow-opacity: 0.04; --blush-opacity: 0.1; --badge-opacity: 0.92; --badge-scale: 0.95; --breath-duration: 5s;
+    }
+    .mochi-svg[data-state="offline"] .tint-slate { opacity: 0.75; }
+    .mochi-svg[data-state="offline"] .badge-pill-shape { opacity: 0; }
+    .mochi-svg[data-state="offline"] .badge-circle-shape { opacity: 1; }
+    .mochi-svg[data-state="offline"] .badge-circle-bg { fill: #64748b; }
+    .mochi-svg[data-state="offline"] .eye-dot { opacity: 0; }
+    .mochi-svg[data-state="offline"] .eye-sleepy-arc { opacity: 1; }
+
+    /* Compact Overlay Mode Overrides (As defined in Phase 3b & Phase 4) */
+    .app-viewport.has-overlay .mochi-svg .mochi-badge-group,
+    .app-viewport.has-overlay .mochi-svg .mochi-orbit-ring,
+    .app-viewport.has-overlay .mochi-svg .mochi-ripple-ring {
+      opacity: 0 !important;
+    }
+    .app-viewport.has-overlay .mochi-svg .mochi-float-group {
+      animation-name: mochiFloatCompact !important;
+    }
+    .app-viewport.has-overlay .mochi-svg .mochi-eye-left,
+    .app-viewport.has-overlay .mochi-svg .mochi-eye-right {
+      transform: scale(1.18);
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    body.reduced-motion *,
+    body.reduced-motion *::before,
+    body.reduced-motion *::after {
+      animation: none !important;
+      transition-duration: 100ms !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Shared Phase 3 Approved Mochi SVG Defs -->
+  <svg width="0" height="0" style="position:absolute; pointer-events:none;" aria-hidden="true">
+    <defs>
+      <path id="mochi-squircle-path" d="M 120 46 C 171 46, 200 66, 200 108 C 200 150, 171 170, 120 170 C 69 170, 40 150, 40 108 C 40 66, 69 46, 120 46 Z" />
+      <clipPath id="mochi-body-clip"><use href="#mochi-squircle-path" /></clipPath>
+      <radialGradient id="mochi-base-grad" cx="64%" cy="32%" r="72%">
+        <stop offset="0%" stop-color="#FFFFFF" />
+        <stop offset="42%" stop-color="#F5F6F9" />
+        <stop offset="82%" stop-color="#D8DCE6" />
+        <stop offset="100%" stop-color="#C2C7D4" />
+      </radialGradient>
+      <radialGradient id="mochi-specular-grad" cx="67%" cy="30%" r="36%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95" />
+        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="mochi-tint-blue" cx="50%" cy="88%" r="75%">
+        <stop offset="0%" stop-color="#58A6FF" stop-opacity="0.95" />
+        <stop offset="55%" stop-color="#8EC5FF" stop-opacity="0.55" />
+        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="mochi-tint-purple" cx="50%" cy="88%" r="75%">
+        <stop offset="0%" stop-color="#A78BFA" stop-opacity="0.92" />
+        <stop offset="55%" stop-color="#C4B5FD" stop-opacity="0.5" />
+        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="mochi-tint-amber" cx="50%" cy="88%" r="75%">
+        <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.8" />
+        <stop offset="55%" stop-color="#FDE68A" stop-opacity="0.45" />
+        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="mochi-tint-slate" cx="50%" cy="80%" r="75%">
+        <stop offset="0%" stop-color="#64748B" stop-opacity="0.65" />
+        <stop offset="100%" stop-color="#94A3B8" stop-opacity="0.15" />
+      </radialGradient>
+      <radialGradient id="mochi-blush-grad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#F472B6" stop-opacity="0.85" />
+        <stop offset="100%" stop-color="#F472B6" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="mochi-shadow-grad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#000000" stop-opacity="0.72" />
+        <stop offset="60%" stop-color="#000000" stop-opacity="0.28" />
+        <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="mochi-glow-grad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#93C5FD" stop-opacity="0.65" />
+        <stop offset="55%" stop-color="#60A5FA" stop-opacity="0.2" />
+        <stop offset="100%" stop-color="#3B82F6" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+  </svg>
+
+  <div class="shell-container">
+    <aside class="fidelity-banner">
+      <strong>✅ ملاحظة المطابقة مع Mochi المعتمد (Phase 3 Fidelity Note):</strong>
+      تم استخدام نفس كود الـ SVG المعتمد في المرحلة الثالثة (`Superellipse n=2.7`، التدرجات الكروية، مواضع العيون والخدود، والشارة العلوية) بدون أي تعديل في تصميم الكاركتر. عند فتح أي طبقة Overlay، ينتقل Mochi تلقائياً إلى الحجم المدمج (<code>96×88px</code> على الهاتف) مع إخفاء الشارة العلوية وتكبير العيون بنسبة <code>+18%</code> لسهولة القراءة.
+    </aside>
+
+    <header class="top-bar">
+      <div>
+        <h1>🍡 Mochi AI — المرجع البصري للشاشات ونظام التصميم (Phase 4 Screens)</h1>
+      </div>
+      <div class="top-bar-toggles">
+        <label class="pill-toggle">
+          <input type="checkbox" id="toggle-light-theme" />
+          <span>Light Theme (ورق الأرز الدافئ)</span>
+        </label>
+        <label class="pill-toggle">
+          <input type="checkbox" id="toggle-reduced-motion" />
+          <span>Reduced Motion (تقليل الحركة)</span>
+        </label>
+      </div>
+    </header>
+
+    <!-- Screen Switcher Buttons (12 Screens covering all 10 required + Roadmap & Offline) -->
+    <nav class="screen-switcher" id="screen-tabs" aria-label="مبدل الشاشات"></nav>
+
+    <!-- Side-by-Side 380px Phone Frame & Desktop Frame -->
+    <main class="devices-stage">
+      <div class="device-column">
+        <div class="device-label">
+          <span>📱 إطار الموبايل المستهدف (Samsung Galaxy A51)</span>
+          <span class="tabular-time">380px × 760px</span>
+        </div>
+        <div class="phone-frame">
+          <div class="phone-punch-hole"></div>
+          <div id="phone-mount" style="width:100%; height:100%;"></div>
+        </div>
+      </div>
+
+      <div class="device-column">
+        <div class="device-label">
+          <span>💻 إطار اللابتوب (HP Windows Desktop / PWA Window)</span>
+          <span class="tabular-time">Responsive Split / Centered Canvas</span>
+        </div>
+        <div class="desktop-frame">
+          <div id="desktop-mount" style="width:100%; height:100%;"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function renderMochiCharacter(state) {
+      return `
+        <svg class="mochi-svg" data-state="${state}" viewBox="0 0 240 220" role="img" aria-label="Mochi in ${state} state">
+          <circle class="mochi-ambient-glow" cx="120" cy="108" r="96" fill="url(#mochi-glow-grad)" />
+          <circle class="mochi-orbit-ring" cx="120" cy="108" r="92" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="1.2" />
+          <circle class="mochi-ripple-ring" cx="120" cy="108" r="82" fill="none" stroke="rgba(96,165,250,0.45)" stroke-width="2" />
+          <ellipse class="mochi-floor-shadow" cx="120" cy="194" rx="52" ry="8.5" fill="url(#mochi-shadow-grad)" />
+          <g class="mochi-float-group">
+            <g class="mochi-pose-group">
+              <g clip-path="url(#mochi-body-clip)">
+                <use href="#mochi-squircle-path" fill="url(#mochi-base-grad)" />
+                <rect class="tint-blue" x="35" y="40" width="170" height="135" fill="url(#mochi-tint-blue)" />
+                <rect class="tint-purple" x="35" y="40" width="170" height="135" fill="url(#mochi-tint-purple)" />
+                <rect class="tint-amber" x="35" y="40" width="170" height="135" fill="url(#mochi-tint-amber)" />
+                <rect class="tint-slate" x="35" y="40" width="170" height="135" fill="url(#mochi-tint-slate)" />
+                <use href="#mochi-squircle-path" fill="url(#mochi-specular-grad)" />
+              </g>
+              <g class="mochi-face-group">
+                <g class="mochi-blush-group">
+                  <ellipse cx="76" cy="121" rx="14" ry="6.5" fill="url(#mochi-blush-grad)" />
+                  <ellipse cx="164" cy="121" rx="14" ry="6.5" fill="url(#mochi-blush-grad)" />
+                </g>
+                <g class="mochi-eye-left">
+                  <ellipse class="eye-dot" cx="95" cy="114" rx="8.4" ry="9.5" fill="#181619" />
+                  <path class="eye-happy-arc" d="M 83 114 C 87 102, 103 102, 107 114" fill="none" stroke="#181619" stroke-width="7" stroke-linecap="round" />
+                  <line class="eye-flat-line" x1="85" y1="115" x2="105" y2="115" stroke="#181619" stroke-width="6" stroke-linecap="round" />
+                  <path class="eye-sleepy-arc" d="M 85 112 C 89 120, 101 120, 105 112" fill="none" stroke="#181619" stroke-width="6" stroke-linecap="round" />
+                </g>
+                <g class="mochi-eye-right">
+                  <ellipse class="eye-dot" cx="145" cy="114" rx="8.4" ry="9.5" fill="#181619" />
+                  <path class="eye-happy-arc" d="M 133 114 C 137 102, 153 102, 157 114" fill="none" stroke="#181619" stroke-width="7" stroke-linecap="round" />
+                  <line class="eye-flat-line" x1="135" y1="115" x2="155" y2="115" stroke="#181619" stroke-width="6" stroke-linecap="round" />
+                  <path class="eye-sleepy-arc" d="M 135 112 C 139 120, 151 120, 155 112" fill="none" stroke="#181619" stroke-width="6" stroke-linecap="round" />
+                </g>
+              </g>
+              <g class="mochi-badge-group">
+                <g class="badge-pill-shape">
+                  <rect class="badge-pill-bg" x="42" y="42" width="52" height="28" rx="14" fill="#2589FF" stroke="#0B0C10" stroke-width="5" />
+                  <circle class="badge-dot-1" cx="55" cy="56" r="4.2" fill="#FFFFFF" />
+                  <circle class="badge-dot-2" cx="68" cy="56" r="3.4" fill="#FFFFFF" />
+                  <circle class="badge-dot-3" cx="81" cy="56" r="3.4" fill="#FFFFFF" />
+                </g>
+                <g class="badge-circle-shape">
+                  <circle class="badge-circle-bg" cx="68" cy="56" r="18" fill="#F59E0B" stroke="#0B0C10" stroke-width="5" />
+                  <rect x="65.8" y="45.5" width="4.4" height="12" rx="2.2" fill="#FFFFFF" />
+                  <circle cx="68" cy="63" r="2.4" fill="#FFFFFF" />
+                </g>
+              </g>
+            </g>
+          </g>
+        </svg>
+      `;
+    }
+
+    function renderMicIndicator(micState) {
+      const configs = {
+        off: {
+          icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="2" y1="2" x2="22" y2="22"/><path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2"/><path d="M5 10v2a7 7 0 0 0 12 5"/><path d="M15 9.34V5a3 3 0 0 0-5.68-1.33"/></svg>`,
+          cue: "○",
+          label: "المايك متوقف"
+        },
+        listening: {
+          icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3898ff" stroke-width="2.4" stroke-linecap="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>`,
+          cue: "●",
+          label: "بيسمعك • إيقاف"
+        },
+        paused: {
+          icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`,
+          cue: "■",
+          label: "متوقف مؤقتاً • استئناف"
+        },
+        permission: {
+          icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.4"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+          cue: "▲",
+          label: "مطلوب إذن المايك"
+        },
+        unavailable: {
+          icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.4"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+          cue: "✕",
+          label: "الصوت مقفول • اكتب"
+        }
+      };
+      const c = configs[micState] || configs.off;
+      return `
+        <button class="mic-indicator-pill" data-mic-state="${micState}" aria-label="حالة المايك: ${c.label}">
+          <span class="mic-shape-cue">${c.icon}</span>
+          <span aria-hidden="true" style="font-size:0.7rem;">${c.cue}</span>
+          <span>${c.label}</span>
+        </button>
+      `;
+    }
+
+    const SCREENS = [
+      {
+        id: "1-home-idle",
+        title: "1. الرئيسية — خامل (Idle)",
+        sub: "Home / Idle / Mic Off",
+        mochiState: "idle",
+        micState: "off",
+        hasOverlay: false,
+        stageHTML: `
+          <div class="captions-stack">
+            <p style="font-size:0.86rem; color:var(--color-text-muted); text-align:center;">
+              المس Mochi في أي وقت عشان تبدأ تتكلم معاه
+            </p>
+            <button class="subtle-typing-trigger" onclick="selectScreen('9-typing')">⌨️ أو اكتب لـ Mochi بهدوء</button>
+          </div>
+        `,
+        overlayHTML: ""
+      },
+      {
+        id: "2-home-listening",
+        title: "2. الاستماع وكلام المستخدم",
+        sub: "Listening + User Speech",
+        mochiState: "hearing",
+        micState: "listening",
+        hasOverlay: false,
+        stageHTML: `
+          <div class="captions-stack" aria-live="polite">
+            <div class="user-transcript-bubble">
+              «عايز أراجع الـ <span class="en-term">API integration</span> قبل اجتماع الساعة ٢، ورتّبيلي باقي اليوم»
+              <div class="transcript-meta">
+                <span>● جاري التقاط كلامك (مؤقت ولا يُحفظ خام)</span>
+                <span style="text-decoration:underline; cursor:pointer;" onclick="selectScreen('9-typing')">✎ تصحيح</span>
+              </div>
+            </div>
+          </div>
+        `,
+        overlayHTML: ""
+      },
+      {
+        id: "3-home-replying",
+        title: "3. رد Mochi مع الـ Caption",
+        sub: "Mochi Speaking + Caption",
+        mochiState: "speaking",
+        micState: "off",
+        hasOverlay: false,
+        stageHTML: `
+          <div class="captions-stack" aria-live="polite">
+            <div class="mochi-reply-bubble">
+              تمام يا محمود. خلّينا نبدأ بـ <span class="en-term">API integration</span> دلوقتي لمدة ٤٥ دقيقة قبل الزحمة. تحب أشغّل تايمر التركيز؟
+            </div>
+            <p style="font-size:0.75rem; color:var(--color-text-muted);">
+              المس Mochi لو حابب تقاطعه أو تعدّل الاقتراح
+            </p>
+          </div>
+        `,
+        overlayHTML: ""
+      },
+      {
+        id: "4-confirm-card",
+        title: "4. بطاقة الموافقة على التعديل",
+        sub: "Schedule Change Consent",
+        mochiState: "curious",
+        micState: "listening",
+        hasOverlay: false,
+        stageHTML: `
+          <div class="captions-stack">
+            <div class="mochi-reply-bubble" style="font-size:0.95rem; padding:10px 14px;">
+              عشان المشوار الطارئ، أقترح نأجّل مراجعة الـ <span class="en-term">UI Review</span> لبعد المغرب. مناسب ليك أحفظ التعديل ده؟
+            </div>
+          </div>
+        `,
+        overlayHTML: `
+          <section class="overlay-sheet" aria-label="تأكيد تعديل الجدول" style="margin-top:8px;">
+            <div class="overlay-header" style="margin-bottom:8px; padding-bottom:8px;">
+              <span class="overlay-title" style="font-size:1rem;">🗓️ اقتراح تعديل (يحتاج موافقتك)</span>
+              <span class="status-tag tag-moved">تغيير موعد واحد</span>
+            </div>
+            <div class="confirm-diff-box">
+              <div class="diff-row">
+                <span>المهمة: <strong class="en-term">UI Layout Review</strong></span>
+              </div>
+              <div class="diff-row">
+                <span class="diff-old">قبل: اليوم <span class="tabular-time">02:00 PM</span></span>
+                <span>←</span>
+                <span class="diff-new">بعد: اليوم <span class="tabular-time">06:30 PM</span></span>
+              </div>
+            </div>
+            <div class="action-buttons-row">
+              <button class="btn-primary-confirm" onclick="selectScreen('1-home-idle')">✓ موافق، احفظ التعديل</button>
+              <button class="btn-secondary-cancel" onclick="selectScreen('1-home-idle')">✕ لا، خليه زي ما هو</button>
+            </div>
+          </section>
+        `
+      },
+      {
+        id: "5-day-timeline",
+        title: "5. جدول اليوم (مع Mochi مدمج)",
+        sub: "Day Timeline + Compact Mochi",
+        mochiState: "idle",
+        micState: "off",
+        hasOverlay: true,
+        stageHTML: `
+          <span class="compact-return-hint">المس Mochi للرجوع للشاشة الرئيسية</span>
+        `,
+        overlayHTML: `
+          <section class="overlay-sheet" aria-label="جدول النهارده">
+            <div class="overlay-header">
+              <div class="overlay-title">📅 جدول النهارده <span class="tabular-time" style="font-size:0.8rem; color:var(--color-text-muted); font-weight:normal;">22 Oct</span></div>
+              <button class="overlay-close-btn" onclick="selectScreen('1-home-idle')">✕ اخفي الجدول</button>
+            </div>
+            <div class="task-list">
+              <div class="task-item done">
+                <div class="task-info">
+                  <span class="task-name">مراجعة أولويات الصبح</span>
+                  <span class="task-sub"><span class="tabular-time">09:30 AM</span> • 15 دقيقة</span>
+                </div>
+                <span class="status-tag tag-done">✓ خلصت</span>
+              </div>
+              <div class="task-item current">
+                <div class="task-info">
+                  <span class="task-name">ربط <span class="en-term">API Integration</span></span>
+                  <span class="task-sub"><span class="tabular-time">11:00 AM</span> • 45 دقيقة</span>
+                </div>
+                <span class="status-tag tag-active">● جارية الآن</span>
+              </div>
+              <div class="task-item">
+                <div class="task-info">
+                  <span class="task-name">اجتماع مراجعة <span class="en-term">ERP</span></span>
+                  <span class="task-sub"><span class="tabular-time">02:00 PM</span> • 30 دقيقة</span>
+                </div>
+                <span class="status-tag tag-upcoming">قادمة</span>
+              </div>
+              <div class="task-item">
+                <div class="task-info">
+                  <span class="task-name">تجهيز ملفات <span class="en-term">Open-Source Repo</span></span>
+                  <span class="task-sub"><span class="tabular-time">04:30 PM</span> • 40 دقيقة</span>
+                </div>
+                <span class="status-tag tag-upcoming">قادمة</span>
+              </div>
+            </div>
+          </section>
+        `
+      },
+      {
+        id: "6-focus-timer",
+        title: "6. تايمر التركيز (Quiet Focus)",
+        sub: "Focus Timer + Quiet State",
+        mochiState: "focus",
+        micState: "off",
+        hasOverlay: true,
+        stageHTML: `
+          <span class="compact-return-hint">حضور هادئ (Quiet Focus) — المايك متوقف</span>
+        `,
+        overlayHTML: `
+          <section class="overlay-sheet" aria-label="تايمر التركيز">
+            <div class="overlay-header">
+              <div class="overlay-title">🎯 جلسة تركيز هادئة</div>
+              <button class="overlay-close-btn" onclick="selectScreen('1-home-idle')">اخفي التايمر</button>
+            </div>
+            <div class="focus-timer-box">
+              <div style="font-size:0.88rem; color:var(--color-text-secondary);">المهمة الحالية: <strong>ضبط <span class="en-term">Tailwind v4 Tokens</span></strong></div>
+              <div class="timer-digits">14:52</div>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" style="width: 50%;"></div>
+              </div>
+              <div style="font-size:0.78rem; color:var(--color-semantic-caution); margin-bottom:10px;">
+                ✨ عدّى نص الوقت (50%) — خد نفس وكمل براحتك
+              </div>
+              <div class="action-buttons-row">
+                <button class="btn-secondary-cancel">⏸ إيقاف مؤقت</button>
+                <button class="btn-primary-confirm" onclick="selectScreen('1-home-idle')">✓ خلصت المهمة</button>
+              </div>
+            </div>
+          </section>
+        `
+      },
+      {
+        id: "7-eod-summary",
+        title: "7. ملخص ومراجعة آخر اليوم",
+        sub: "End-of-Day Summary",
+        mochiState: "proud",
+        micState: "off",
+        hasOverlay: true,
+        stageHTML: `
+          <span class="compact-return-hint">مراجعة هادئة بدون أي لوم</span>
+        `,
+        overlayHTML: `
+          <section class="overlay-sheet" aria-label="ملخص آخر اليوم">
+            <div class="overlay-header">
+              <div class="overlay-title">🌙 مراجعة النهارده بهدوء</div>
+              <button class="overlay-close-btn" onclick="selectScreen('1-home-idle')">✕ خلاص كده</button>
+            </div>
+            <div class="task-list">
+              <div class="task-item">
+                <div class="task-info">
+                  <span class="task-name" style="color:var(--color-semantic-confirm);">✓ اتعمل النهارده (٢)</span>
+                  <span class="task-sub">أولويات الصبح + ربط الـ <span class="en-term">API Integration</span></span>
+                </div>
+              </div>
+              <div class="task-item">
+                <div class="task-info">
+                  <span class="task-name">⏳ لسه متعملش (١ — بدون استعجال)</span>
+                  <span class="task-sub">تجهيز ملفات <span class="en-term">Open-Source Repo</span></span>
+                </div>
+                <span class="status-tag tag-moved">مقترح لبكرة</span>
+              </div>
+              <div class="task-item current">
+                <div class="task-info">
+                  <span class="task-name">☀️ أول خطوة مقترحة لبكرة الصبح</span>
+                  <span class="task-sub">تجهيز الـ <span class="en-term">Repo</span> الساعة <span class="tabular-time">10:00 AM</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="action-buttons-row" style="margin-top:12px;">
+              <button class="btn-primary-confirm" onclick="selectScreen('1-home-idle')">✓ اعتمد خطة بكرة</button>
+              <button class="btn-secondary-cancel" onclick="selectScreen('1-home-idle')">سيبها من غير ميعاد</button>
+            </div>
+          </section>
+        `
+      },
+      {
+        id: "8-notif-settings",
+        title: "8. إعدادات الإشعارات والهدوء",
+        sub: "Notification Settings Overlay",
+        mochiState: "idle",
+        micState: "off",
+        hasOverlay: true,
+        stageHTML: `
+          <span class="compact-return-hint">تقدر تعدّل الإعدادات بالصوت أو اللمس</span>
+        `,
+        overlayHTML: `
+          <section class="overlay-sheet" aria-label="إعدادات الإشعارات">
+            <div class="overlay-header">
+              <div class="overlay-title">🔔 إعدادات التذكيرات الهادئة</div>
+              <button class="overlay-close-btn" onclick="selectScreen('1-home-idle')">✕ إغلاق</button>
+            </div>
+            <div style="font-size:0.78rem; color:var(--color-semantic-confirm); margin-bottom:10px;">
+              ● الحالة الفعلية: مفعّلة حسب الإذن (بحد أقصى ٤ تذكيرات يومياً)
+            </div>
+            <div class="setting-row">
+              <div>
+                <div style="font-weight:600;">تذكيرات جلسة التركيز (50% ونهاية الوقت)</div>
+                <div style="font-size:0.73rem; color:var(--color-text-muted);">تذكير نصي صامت بدون تشغيل صوت تلقائي</div>
+              </div>
+              <div class="switch-pill on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="setting-row">
+              <div>
+                <div style="font-weight:600;">تذكير بداية المهمة (قبلها بـ 5 دقائق)</div>
+                <div style="font-size:0.73rem; color:var(--color-text-muted);">مرة واحدة لكل مهمة محددة بوقت</div>
+              </div>
+              <div class="switch-pill on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="setting-row">
+              <div>
+                <div style="font-weight:600;">إخفاء اسم المهمة على شاشة القفل</div>
+                <div style="font-size:0.73rem; color:var(--color-text-muted);">لحماية خصوصية مشاريعك على الموبايل</div>
+              </div>
+              <div class="switch-pill on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="setting-row">
+              <div>
+                <div style="font-weight:600;">ساعات الهدوء (<span class="en-term">Quiet Hours</span>)</div>
+                <div style="font-size:0.73rem; color:var(--color-text-muted);">من <span class="tabular-time">10:00 PM</span> إلى <span class="tabular-time">08:00 AM</span> + يوم الإجازة</div>
+              </div>
+              <span class="status-tag tag-active">نشط</span>
+            </div>
+          </section>
+        `
+      },
+      {
+        id: "9-typing",
+        title: "9. مسار الكتابة الاحتياطي مفتوح",
+        sub: "Hidden Typing Fallback Open",
+        mochiState: "paused",
+        micState: "paused",
+        hasOverlay: false,
+        stageHTML: `
+          <div class="captions-stack">
+            <div class="mochi-reply-bubble" style="font-size:0.95rem;">
+              المايك متوقف دلوقتي عشان تاخد راحتك. اكتب اللي تحبه وهرد عليك هنا.
+            </div>
+            <div class="typing-fallback-bar">
+              <input class="typing-input" type="text" value="انقل مراجعة الـ API للساعة ٤ العصر" aria-label="اكتب أمرك لـ Mochi" />
+              <button class="typing-send-btn" onclick="selectScreen('4-confirm-card')">إرسال ↵</button>
+              <button class="typing-close-btn" onclick="selectScreen('1-home-idle')" title="إغلاق الكتابة">✕</button>
+            </div>
+          </div>
+        `,
+        overlayHTML: ""
+      },
+      {
+        id: "10-error-offline",
+        title: "10. حالة رفض المايك / Offline",
+        sub: "Mic Denied Error & Offline",
+        mochiState: "error",
+        micState: "unavailable",
+        hasOverlay: false,
+        stageHTML: `
+          <div class="captions-stack">
+            <div class="mochi-reply-bubble" style="border-color:rgba(245,158,11,0.45);">
+              إذن المايك مقفول من إعدادات المتصفح حالياً، أو مفيش اتصال بالخدمة. ولا يهمك، تقدر تكمّل بالكتابة فوراً أو نجرّب تاني.
+            </div>
+            <div class="action-buttons-row" style="width:100%;">
+              <button class="btn-primary-confirm" style="background:var(--color-semantic-caution);" onclick="selectScreen('9-typing')">⌨️ كمّل بالكتابة دلوقتي</button>
+              <button class="btn-secondary-cancel" onclick="selectScreen('2-home-listening')">🔄 إعادة المحاولة</button>
+            </div>
+          </div>
+        `,
+        overlayHTML: ""
+      },
+      {
+        id: "11-roadmap-overlay",
+        title: "11. تقدم الـ Roadmap (إضافي)",
+        sub: "Roadmap Progress Overlay",
+        mochiState: "thinking",
+        micState: "off",
+        hasOverlay: true,
+        stageHTML: `
+          <span class="compact-return-hint">ملخص مركز لـ 3 نقاط فقط بدون زحمة</span>
+        `,
+        overlayHTML: `
+          <section class="overlay-sheet" aria-label="تقدم الـ Roadmap">
+            <div class="overlay-header">
+              <div class="overlay-title">🗺️ <span class="en-term">Mochi AI v1 Roadmap</span></div>
+              <button class="overlay-close-btn" onclick="selectScreen('1-home-idle')">✕ إغلاق</button>
+            </div>
+            <div class="progress-bar-track" style="margin-bottom:14px;">
+              <div class="progress-bar-fill" style="width: 65%; background:var(--color-semantic-thinking);"></div>
+            </div>
+            <div class="task-list">
+              <div class="task-item done">
+                <div class="task-info">
+                  <span class="task-name">المرحلة ٣: تصميم الكاركتر والحركة</span>
+                  <span class="task-sub">اكتملت (<span class="en-term">16 States + SVG Spec</span>)</span>
+                </div>
+                <span class="status-tag tag-done">✓ مكتملة</span>
+              </div>
+              <div class="task-item current">
+                <div class="task-info">
+                  <span class="task-name">المرحلة ٤: نظام التصميم والشاشات</span>
+                  <span class="task-sub">مراجعة الألوان والـ <span class="en-term">Overlays</span></span>
+                </div>
+                <span class="status-tag tag-active">● الحالية</span>
+              </div>
+              <div class="task-item">
+                <div class="task-info">
+                  <span class="task-name">المرحلة ٥: شخصية الصوت والـ <span class="en-term">Prompts</span></span>
+                  <span class="task-sub">الخطوة الجاية مباشرة بعد الاعتماد</span>
+                </div>
+                <span class="status-tag tag-upcoming">الجاية ←</span>
+              </div>
+            </div>
+          </section>
+        `
+      },
+      {
+        id: "12-offline-state",
+        title: "12. حالة انقطاع الإنترنت (Offline)",
+        sub: "Calm Offline Recovery",
+        mochiState: "offline",
+        micState: "off",
+        hasOverlay: false,
+        stageHTML: `
+          <div class="captions-stack">
+            <div class="mochi-reply-bubble" style="border-color:rgba(100,116,139,0.5);">
+              الإنترنت فاصل دلوقتي، فمش هقدر أنفّذ طلبات صوتية جديدة. جدولك المحفوظ لسه موجود، وأول ما الشبكة ترجع تقدر تلمسني ونكمّل.
+            </div>
+            <div class="action-buttons-row" style="width:100%;">
+              <button class="btn-secondary-cancel" onclick="selectScreen('5-day-timeline')">📅 اعرض الجدول المحفوظ</button>
+              <button class="btn-secondary-cancel" onclick="selectScreen('1-home-idle')">🔄 فحص الاتصال</button>
+            </div>
+          </div>
+        `,
+        overlayHTML: ""
+      }
+    ];
+
+    const tabsContainer = document.getElementById("screen-tabs");
+    const phoneMount = document.getElementById("phone-mount");
+    const desktopMount = document.getElementById("desktop-mount");
+
+    function buildViewportMarkup(scr) {
+      return `
+        <div class="app-viewport ${scr.hasOverlay ? "has-overlay" : ""}">
+          ${renderMicIndicator(scr.micState)}
+          <div class="mochi-stage-column">
+            <div class="mochi-character-box" onclick="selectScreen(scr.hasOverlay ? '1-home-idle' : '2-home-listening')" tabindex="0" role="button" aria-label="شخصية Mochi — المس للتفاعل">
+              ${renderMochiCharacter(scr.mochiState)}
+            </div>
+            ${scr.stageHTML}
+          </div>
+          ${scr.overlayHTML}
+        </div>
+      `;
+    }
+
+    function selectScreen(screenId) {
+      const scr = SCREENS.find((s) => s.id === screenId) || SCREENS[0];
+      document.querySelectorAll(".screen-tab").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.id === scr.id);
+      });
+      const markup = buildViewportMarkup(scr);
+      phoneMount.innerHTML = markup;
+      desktopMount.innerHTML = markup;
+    }
+
+    SCREENS.forEach((scr) => {
+      const btn = document.createElement("button");
+      btn.className = "screen-tab";
+      btn.dataset.id = scr.id;
+      btn.innerHTML = `<span>${scr.title}</span><span class="sub">${scr.sub}</span>`;
+      btn.addEventListener("click", () => selectScreen(scr.id));
+      tabsContainer.appendChild(btn);
+    });
+
+    // Initialize with Screen 1
+    selectScreen("1-home-idle");
+
+    // Theme & Reduced Motion Toggles
+    document.getElementById("toggle-light-theme").addEventListener("change", (e) => {
+      document.body.setAttribute("data-theme", e.target.checked ? "light" : "dark");
+    });
+
+    document.getElementById("toggle-reduced-motion").addEventListener("change", (e) => {
+      document.body.classList.toggle("reduced-motion", e.target.checked);
+    });
+  </script>
+</body>
+</html>

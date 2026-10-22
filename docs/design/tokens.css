@@ -1,0 +1,158 @@
+/**
+ * 🍡 Mochi AI — Design System Tokens (Phase 4)
+ * Target: Tailwind CSS v4 (@theme) & Standard CSS Custom Properties
+ * License: Open Source Ready (SIL OFL Typography)
+ */
+
+@theme {
+  /* ==========================================================================
+     1. COLOR TOKENS (Default Dark Theme: "Mochi Night")
+     Designed not to clash with Mochi's state glows (#3898FF, #8B5CF6, #F59E0B)
+     ========================================================================== */
+
+  /* Canvas & Stage Backgrounds — Used on main home screen behind Mochi */
+  --color-bg-canvas: #0b0c10;
+  --color-bg-stage-glow: #171a24;
+
+  /* Surfaces — Used for Overlays, Confirmation Cards, Captions, and Inputs */
+  --color-surface-card: rgba(20, 23, 32, 0.94);
+  --color-surface-elevated: #1c202c;
+  --color-surface-hover: #252a3a;
+  --color-surface-caption: rgba(17, 19, 26, 0.92);
+  --color-surface-transcript: rgba(56, 152, 255, 0.08);
+
+  /* Text Hierarchy — All pairs meet WCAG 2.1 AA/AAA contrast on surfaces */
+  --color-text-primary: #f8fafc;     /* Main headings, Mochi replies, task titles (15.6:1) */
+  --color-text-secondary: #cbd5e1;   /* Timestamps, subtitles, secondary actions (10.2:1) */
+  --color-text-muted: #94a3b8;       /* Completed tasks, subtle hints, captions meta (5.6:1) */
+  --color-text-on-accent: #0b0c10;   /* Dark text on bright semantic buttons (Teal/Amber/Blue) */
+
+  /* Borders & Focus Ring — Used for card framing and keyboard accessibility */
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.18);
+  --color-border-transcript: rgba(56, 152, 255, 0.48);
+  --color-focus-ring: #60a5fa;       /* 2px outline on keyboard focus-visible */
+
+  /* Semantic UI Colors — Non-punitive palette (Zero harsh red) */
+  --color-semantic-active: #3898ff;   /* Mic active indicator & primary voice actions */
+  --color-semantic-thinking: #a78bfa; /* Roadmap progress & processing badges */
+  --color-semantic-confirm: #2dd4bf;  /* Schedule change approval button & completed badge */
+  --color-semantic-caution: #f59e0b;  /* Gentle error, permission needed, & 50% check-in */
+  --color-semantic-offline: #64748b;  /* Offline state & muted/paused mic indicator */
+
+  /* Approved Mochi Character Glow Reference Tokens (Read-Only from Phase 3) */
+  --color-mochi-glow-blue: #3898ff;
+  --color-mochi-glow-purple: #8b5cf6;
+  --color-mochi-glow-amber: #f59e0b;
+  --color-mochi-blush: #f472b6;
+
+  /* ==========================================================================
+     2. TYPOGRAPHY TOKENS (Open-Source SIL OFL Fonts + Offline Fallbacks)
+     ========================================================================== */
+
+  /* Primary Arabic & UI Font Stack */
+  --font-sans: "IBM Plex Sans Arabic", "Cairo", "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Arabic", sans-serif;
+
+  /* Monospace Font Stack — Used for Focus Timer, Task Times, and Technical Badges */
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Type Scale & Line Heights (Optimized for Arabic diacritics and vertical rhythm) */
+  --text-timer-display: 2.75rem;     /* 44px — Focus timer countdown */
+  --leading-timer-display: 1.15;
+
+  --text-overlay-title: 1.25rem;     /* 20px — Overlay sheet headers */
+  --leading-overlay-title: 1.45;
+
+  --text-caption-mochi: 1.125rem;    /* 18px — Mochi's spoken reply bubble */
+  --leading-caption-mochi: 1.65;
+
+  --text-caption-user: 1rem;         /* 16px — User's recognized speech transcript & typing input */
+  --leading-caption-user: 1.6;
+
+  --text-body-md: 0.9375rem;         /* 15px — Timeline task rows & confirmation cards */
+  --leading-body-md: 1.6;
+
+  --text-ui-sm: 0.8125rem;           /* 13px — Mic indicator pill, buttons, & timestamps */
+  --leading-ui-sm: 1.5;
+
+  --text-badge-xs: 0.75rem;          /* 12px — Status tags ("قادمة", "جارية") */
+  --leading-badge-xs: 1.4;
+
+  /* ==========================================================================
+     3. SPACING, RADIUS & LAYOUT TOKENS
+     ========================================================================== */
+
+  /* 4px Base Spacing Scale */
+  --spacing-1: 0.25rem;  /* 4px  — Tight icon-to-label gap */
+  --spacing-2: 0.5rem;   /* 8px  — Pill padding & compact stack gap */
+  --spacing-3: 0.75rem;  /* 12px — Button padding & task row padding */
+  --spacing-4: 1rem;     /* 16px — Mobile screen safe padding & card inner padding */
+  --spacing-5: 1.25rem;  /* 20px — Gap between Mochi and caption bubble */
+  --spacing-6: 1.5rem;   /* 24px — Desktop overlay padding */
+  --spacing-8: 2rem;     /* 32px — Stage vertical breathing room */
+
+  /* Squircle-Aligned Border Radius Scale (Matching Mochi n=2.7 curvature) */
+  --radius-sm: 0.625rem; /* 10px — Small status badges */
+  --radius-md: 1rem;     /* 16px — Task rows, action buttons */
+  --radius-lg: 1.5rem;   /* 24px — Captions bubble, confirmation card, typing bar */
+  --radius-xl: 2rem;     /* 32px — Bottom sheet overlays & desktop side panels */
+  --radius-pill: 9999px; /* Full pill — Mic indicator & toggle switches */
+
+  /* GPU-Safe Elevation Shadows (No heavy animated backdrop-filter blur) */
+  --shadow-card: 0 14px 32px -8px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-floating-pill: 0 6px 16px -2px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.14);
+
+  /* ==========================================================================
+     4. MOTION TOKENS (Consistent with Phase 3 Character Physics)
+     ========================================================================== */
+  --ease-mochi-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* Confirmation card & gentle pop */
+  --ease-mochi-smooth: cubic-bezier(0.22, 1, 0.36, 1);    /* Captions & size transitions */
+  --ease-sheet-glide: cubic-bezier(0.32, 0.72, 0, 1);     /* Bottom sheet & side panel enter */
+
+  --duration-fast: 150ms;    /* Hover, button press, & reduced-motion fade */
+  --duration-normal: 220ms;  /* Caption bubble & typing bar enter/exit */
+  --duration-sheet: 300ms;   /* Overlay sheet & compact Mochi transition */
+}
+
+/* ============================================================================
+   OPTIONAL SECONDARY THEME: "Warm Rice Paper" (Light Mode)
+   Activated via [data-theme="light"] on <html> or <body>
+   ============================================================================ */
+[data-theme="light"] {
+  --color-bg-canvas: #f4f1ea;
+  --color-bg-stage-glow: #eae5d9;
+  --color-surface-card: rgba(255, 255, 255, 0.95);
+  --color-surface-elevated: #ece8df;
+  --color-surface-hover: #e2ddd2;
+  --color-surface-caption: rgba(24, 22, 25, 0.94); /* Stays dark for crisp caption contrast */
+  --color-surface-transcript: rgba(29, 78, 216, 0.08);
+
+  --color-text-primary: #181619;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+  --color-text-on-accent: #ffffff;
+
+  --color-border-subtle: rgba(24, 22, 25, 0.08);
+  --color-border-strong: rgba(24, 22, 25, 0.18);
+  --color-focus-ring: #2563eb;
+
+  --color-semantic-active: #1d4ed8;
+  --color-semantic-thinking: #6d28d9;
+  --color-semantic-confirm: #0f766e;
+  --color-semantic-caution: #b45309;
+  --color-semantic-offline: #475569;
+
+  --shadow-card: 0 14px 28px -8px rgba(24, 22, 25, 0.12), 0 0 0 1px rgba(24, 22, 25, 0.08);
+  --shadow-floating-pill: 0 6px 14px -2px rgba(24, 22, 25, 0.1), 0 0 0 1px rgba(24, 22, 25, 0.12);
+}
+
+/* ============================================================================
+   REDUCED MOTION GLOBAL OVERRIDE
+   ============================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 100ms;
+    --duration-normal: 120ms;
+    --duration-sheet: 150ms;
+  }
+}
