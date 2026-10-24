@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mochi AI — Phase 4b Updated Screen Layouts (v1.1 — Vision v1.3 Aligned)</title>
+  <title>Mochi AI — Phase 4 Screen Layouts & Design System Reference</title>
   <style>
     /* ==========================================================================
-       1. DESIGN SYSTEM TOKENS (Updated v1.1 from tokens.css)
+       1. DESIGN SYSTEM TOKENS (Inline from tokens.css)
        ========================================================================== */
     :root {
       --color-bg-canvas: #0b0c10;
@@ -20,7 +20,6 @@
       --color-text-primary: #f8fafc;
       --color-text-secondary: #cbd5e1;
       --color-text-muted: #94a3b8;
-      --color-text-offline: #b0becf; /* Added in v1.1: 8.52:1 on elevated, 9.74:1 on canvas */
       --color-text-on-accent: #0b0c10;
 
       --color-border-subtle: rgba(255, 255, 255, 0.08);
@@ -32,7 +31,7 @@
       --color-semantic-thinking: #a78bfa;
       --color-semantic-confirm: #2dd4bf;
       --color-semantic-caution: #f59e0b;
-      --color-semantic-offline: #64748b; /* Icons & borders only */
+      --color-semantic-offline: #64748b;
 
       --font-sans: "IBM Plex Sans Arabic", "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Arabic", sans-serif;
       --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
@@ -60,12 +59,10 @@
       --color-surface-caption: rgba(24, 22, 25, 0.94);
       --color-surface-transcript: rgba(29, 78, 216, 0.08);
       --color-text-primary: #181619;
-      --color-text-secondary: #334155;
-      --color-text-muted: #526071;   /* Fixed in v1.1: 5.14:1 on elevated, 5.52:1 on canvas */
-      --color-text-offline: #334155; /* Added in v1.1: 8.01:1 on elevated */
+      --color-text-secondary: #475569;
+      --color-text-muted: #64748b;
       --color-border-subtle: rgba(24, 22, 25, 0.09);
       --color-border-strong: rgba(24, 22, 25, 0.18);
-      --color-semantic-offline: #475569;
       --shadow-card: 0 14px 28px -8px rgba(24, 22, 25, 0.12), 0 0 0 1px rgba(24, 22, 25, 0.08);
     }
 
@@ -84,7 +81,7 @@
       overflow-x: hidden;
     }
 
-    /* English technical terms & Western numerals BiDi isolation rule */
+    /* English technical terms BiDi isolation rule */
     .en-term, code, .tabular-time {
       unicode-bidi: isolate;
       font-variant-numeric: tabular-nums;
@@ -92,38 +89,12 @@
 
     .tabular-time {
       font-family: var(--font-mono);
-      font-weight: 600;
-    }
-
-    /* Screen-reader / Keyboard-only focusable typing trigger on Returning Idle */
-    .sr-only-focusable {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-    .sr-only-focusable:focus-visible {
-      position: static;
-      width: auto;
-      height: auto;
-      margin-top: 12px;
-      padding: 6px 14px;
-      clip: auto;
-      background: var(--color-surface-elevated);
-      color: var(--color-text-primary);
-      border: 2px solid var(--color-focus-ring);
-      border-radius: var(--radius-pill);
-      font-size: 0.78rem;
-      cursor: pointer;
+      direction: ltr;
+      display: inline-block;
     }
 
     /* ==========================================================================
-       2. SHOWCASE SHELL & V1.1 CHANGELOG MARKERS
+       2. SHOWCASE SHELL & CONTROLS BAR
        ========================================================================== */
     .shell-container {
       max-width: 1440px;
@@ -132,9 +103,9 @@
 
     .fidelity-banner {
       background: rgba(45, 212, 191, 0.08);
-      border: 1px solid rgba(45, 212, 191, 0.3);
+      border: 1px solid rgba(45, 212, 191, 0.28);
       border-radius: 14px;
-      padding: 12px 16px;
+      padding: 11px 16px;
       margin-bottom: 16px;
       font-size: 0.8rem;
       color: #cbd5e1;
@@ -142,42 +113,6 @@
 
     .fidelity-banner strong {
       color: #5eead4;
-    }
-
-    .fidelity-banner ul {
-      margin-top: 6px;
-      padding-right: 18px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-      gap: 4px 18px;
-    }
-
-    .v11-tag {
-      display: inline-block;
-      background: rgba(245, 158, 11, 0.18);
-      border: 1px solid rgba(245, 158, 11, 0.45);
-      color: #fcd34d;
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      font-weight: 700;
-      padding: 1px 6px;
-      border-radius: 6px;
-      direction: ltr;
-      vertical-align: middle;
-    }
-
-    .screen-v11-note {
-      background: rgba(245, 158, 11, 0.12);
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      color: #fde68a;
-      font-size: 0.76rem;
-      padding: 7px 14px;
-      border-radius: 10px;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
     }
 
     .top-bar {
@@ -225,9 +160,9 @@
     /* Screen Switcher Strip */
     .screen-switcher {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
       gap: 8px;
-      margin-bottom: 16px;
+      margin-bottom: 22px;
     }
 
     .screen-tab {
@@ -237,24 +172,17 @@
       padding: 8px 11px;
       border-radius: 12px;
       font-family: var(--font-sans);
-      font-size: 0.77rem;
+      font-size: 0.78rem;
       text-align: right;
       cursor: pointer;
       transition: all 0.15s ease;
       display: flex;
       flex-direction: column;
-      gap: 3px;
-    }
-
-    .screen-tab-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 4px;
+      gap: 2px;
     }
 
     .screen-tab span.sub {
-      font-size: 0.67rem;
+      font-size: 0.68rem;
       color: #64748b;
       font-family: var(--font-mono);
       direction: ltr;
@@ -273,7 +201,7 @@
       box-shadow: 0 0 0 1px var(--color-semantic-active) inset;
     }
 
-    /* Dual Device Frames Container */
+    /* Dual Device Frames Container (380px Phone + Desktop Side by Side) */
     .devices-stage {
       display: grid;
       grid-template-columns: 400px 1fr;
@@ -318,6 +246,7 @@
       margin: 0 auto;
     }
 
+    /* Subtle punch-hole camera for Galaxy A51 realism */
     .phone-punch-hole {
       width: 12px;
       height: 12px;
@@ -354,7 +283,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 28px 16px 18px;
+      padding: 28px 16px 20px;
       color: var(--color-text-primary);
     }
 
@@ -363,7 +292,7 @@
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 36px;
+      gap: 40px;
     }
 
     /* 3.1 Separate Functional Mic Indicator (Top-Right in RTL) */
@@ -411,10 +340,10 @@
       height: 18px;
     }
 
-    /* Mic States Styling (Updated v1.1: Uses --color-text-offline for text & --color-semantic-offline for border/icon) */
+    /* Mic States Styling (Color + Shape + Icon + Text) */
     .mic-indicator-pill[data-mic-state="off"] {
-      border-color: var(--color-semantic-offline);
-      color: var(--color-text-offline);
+      border-color: var(--color-border-strong);
+      color: var(--color-text-secondary);
     }
 
     .mic-indicator-pill[data-mic-state="listening"] {
@@ -425,17 +354,16 @@
     }
 
     .mic-indicator-pill[data-mic-state="paused"] {
-      background: rgba(100, 116, 139, 0.16);
+      background: rgba(100, 116, 139, 0.18);
       border-style: dashed;
       border-color: var(--color-semantic-offline);
-      color: var(--color-text-offline);
     }
 
     .mic-indicator-pill[data-mic-state="permission"],
     .mic-indicator-pill[data-mic-state="unavailable"] {
       background: rgba(245, 158, 11, 0.15);
       border-color: var(--color-semantic-caution);
-      color: var(--color-text-primary);
+      color: #fde68a;
     }
 
     /* 3.2 Center Stage (Mochi + Captions) */
@@ -450,14 +378,15 @@
       z-index: 10;
     }
 
+    /* When an Overlay is open on Mobile, Mochi shrinks to Compact Variant (96x88px) at Top */
     .app-viewport.has-overlay .mochi-stage-column {
       flex: 0 0 auto;
-      padding-top: 32px;
-      padding-bottom: 4px;
+      padding-top: 34px;
+      padding-bottom: 6px;
     }
 
     .desktop-frame .app-viewport.has-overlay .mochi-stage-column {
-      flex: 0 0 320px;
+      flex: 0 0 340px;
       padding-top: 0;
     }
 
@@ -489,7 +418,7 @@
     }
 
     .compact-return-hint {
-      font-size: 0.73rem;
+      font-size: 0.72rem;
       color: var(--color-text-muted);
       margin-top: 2px;
       display: none;
@@ -514,6 +443,7 @@
       max-width: 480px;
     }
 
+    /* User Recognized Speech Bubble (Dashed border, temporary look) */
     .user-transcript-bubble {
       width: 100%;
       background: var(--color-surface-transcript);
@@ -522,7 +452,7 @@
       padding: 10px 16px;
       font-size: 1rem;
       line-height: 1.6;
-      color: var(--color-text-primary);
+      color: #e0f2fe;
       text-align: center;
       animation: bubbleEnter 220ms var(--ease-mochi-smooth);
     }
@@ -536,13 +466,14 @@
       gap: 10px;
     }
 
+    /* Mochi Reply Bubble */
     .mochi-reply-bubble {
       width: 100%;
       background: var(--color-surface-caption);
       border: 1px solid var(--color-border-strong);
       border-radius: var(--radius-lg);
       padding: 14px 18px;
-      font-size: 1.05rem;
+      font-size: 1.08rem;
       font-weight: 500;
       line-height: 1.65;
       color: #f8fafc;
@@ -553,69 +484,26 @@
       animation: bubbleEnter 220ms var(--ease-mochi-smooth);
     }
 
-    /* First-Visit Only Onboarding Hint (Never shown on Returning Idle) */
-    .first-visit-onboarding-box {
-      border: 1px dashed var(--color-border-strong);
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-
+    /* Subtle Affordance for Hidden Typing Fallback */
     .subtle-typing-trigger {
+      margin-top: 6px;
       background: transparent;
-      border: 1px solid var(--color-border-subtle);
-      color: var(--color-text-secondary);
+      border: none;
+      color: var(--color-text-muted);
       font-family: var(--font-sans);
       font-size: 0.76rem;
+      opacity: 0.65;
       cursor: pointer;
-      padding: 5px 12px;
+      padding: 6px 12px;
       border-radius: var(--radius-pill);
-      transition: background 150ms;
+      transition: opacity 150ms, background 150ms;
     }
 
-    .subtle-typing-trigger:hover {
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    /* Collapsible Mic Recovery Steps (Screen 10A) */
-    .mic-help-details {
-      width: 100%;
-      background: var(--color-surface-elevated);
-      border: 1px solid var(--color-border-strong);
-      border-radius: var(--radius-md);
-      padding: 9px 12px;
-      font-size: 0.75rem;
-      color: var(--color-text-secondary);
-      text-align: right;
-    }
-
-    .mic-help-details summary {
-      cursor: pointer;
-      font-weight: 600;
-      color: var(--color-text-primary);
-      list-style: none;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .mic-help-details summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .mic-help-list {
-      margin-top: 8px;
-      padding-right: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      border-top: 1px solid var(--color-border-subtle);
-      padding-top: 7px;
+    .subtle-typing-trigger:hover,
+    .subtle-typing-trigger:focus-visible {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.06);
+      outline: none;
     }
 
     /* 3.4 Hidden Typing Fallback Bar */
@@ -644,7 +532,7 @@
       border: none;
       color: var(--color-text-primary);
       font-family: var(--font-sans);
-      font-size: 1rem;
+      font-size: 1rem; /* 16px prevents iOS/Android auto-zoom */
       padding: 6px 8px;
       outline: none;
     }
@@ -680,31 +568,31 @@
       background: var(--color-surface-card);
       border: 1px solid var(--color-border-strong);
       border-radius: var(--radius-xl);
-      padding: 15px 14px;
+      padding: 18px 16px;
       box-shadow: var(--shadow-card);
       z-index: 20;
-      max-height: 525px;
+      max-height: 490px;
       overflow-y: auto;
       animation: sheetEnter 280ms var(--ease-sheet-glide);
     }
 
     .desktop-frame .overlay-sheet {
-      flex: 0 1 480px;
-      max-height: 670px;
-      padding: 20px 22px;
+      flex: 0 1 450px;
+      max-height: 640px;
+      padding: 22px 24px;
     }
 
     .overlay-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
-      padding-bottom: 8px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
       border-bottom: 1px solid var(--color-border-subtle);
     }
 
     .overlay-title {
-      font-size: 1.08rem;
+      font-size: 1.15rem;
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -713,14 +601,14 @@
 
     .overlay-close-btn {
       min-width: 44px;
-      min-height: 34px;
+      min-height: 36px;
       padding: 4px 10px;
       border-radius: var(--radius-sm);
       background: var(--color-surface-elevated);
       border: 1px solid var(--color-border-subtle);
       color: var(--color-text-secondary);
       font-family: var(--font-sans);
-      font-size: 0.74rem;
+      font-size: 0.76rem;
       cursor: pointer;
     }
 
@@ -757,7 +645,7 @@
       display: grid;
       grid-template-columns: 1.2fr 1fr;
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 12px;
     }
 
     .btn-primary-confirm {
@@ -767,7 +655,7 @@
       border: none;
       border-radius: var(--radius-md);
       font-family: var(--font-sans);
-      font-size: 0.84rem;
+      font-size: 0.86rem;
       font-weight: 700;
       cursor: pointer;
     }
@@ -779,7 +667,7 @@
       border: 1px solid var(--color-border-strong);
       border-radius: var(--radius-md);
       font-family: var(--font-sans);
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       font-weight: 500;
       cursor: pointer;
     }
@@ -808,7 +696,7 @@
     }
 
     .task-item.done {
-      opacity: 0.72;
+      opacity: 0.62;
     }
 
     .task-info {
@@ -818,32 +706,32 @@
     }
 
     .task-name {
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       font-weight: 600;
     }
 
     .task-sub {
-      font-size: 0.75rem;
+      font-size: 0.76rem;
       color: var(--color-text-secondary);
     }
 
     .status-tag {
-      font-size: 0.71rem;
+      font-size: 0.72rem;
       font-weight: 600;
-      padding: 3px 8px;
+      padding: 3px 9px;
       border-radius: var(--radius-sm);
       white-space: nowrap;
     }
 
-    .tag-done { background: rgba(45, 212, 191, 0.15); color: var(--color-semantic-confirm); }
-    .tag-active { background: rgba(56, 152, 255, 0.2); color: var(--color-semantic-active); }
+    .tag-done { background: rgba(45, 212, 191, 0.15); color: #5eead4; }
+    .tag-active { background: rgba(56, 152, 255, 0.2); color: #93c5fd; }
     .tag-upcoming { background: rgba(255, 255, 255, 0.07); color: var(--color-text-secondary); }
-    .tag-moved { background: rgba(245, 158, 11, 0.14); color: var(--color-semantic-caution); }
+    .tag-moved { background: rgba(245, 158, 11, 0.14); color: #fcd34d; }
 
     /* Focus Timer Display */
     .focus-timer-box {
       text-align: center;
-      padding: 6px 0 10px;
+      padding: 8px 0 12px;
     }
 
     .timer-digits {
@@ -854,7 +742,6 @@
       color: var(--color-text-primary);
       line-height: 1.1;
       margin: 6px 0;
-      direction: ltr;
     }
 
     .progress-bar-track {
@@ -872,33 +759,21 @@
       border-radius: 999px;
     }
 
-    /* Notification Settings Rows (Updated in v1.1 for Vision v1.3) */
-    .settings-group-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--color-text-muted);
-      margin: 8px 2px 5px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
+    /* Notification Settings Rows */
     .setting-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 8px;
-      padding: 7px 10px;
+      padding: 9px 10px;
       background: var(--color-surface-elevated);
-      border: 1px solid var(--color-border-subtle);
-      border-radius: 13px;
-      margin-bottom: 5px;
-      font-size: 0.8rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 7px;
+      font-size: 0.84rem;
     }
 
     .switch-pill {
-      width: 42px;
-      height: 23px;
+      width: 44px;
+      height: 24px;
       border-radius: 999px;
       background: #334155;
       position: relative;
@@ -912,8 +787,8 @@
 
     .switch-pill::after {
       content: "";
-      width: 17px;
-      height: 17px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
       background: #fff;
       position: absolute;
@@ -923,46 +798,7 @@
     }
 
     .switch-pill.on::after {
-      transform: translateX(19px);
-    }
-
-    .inline-edit-chip {
-      background: rgba(56, 152, 255, 0.14);
-      border: 1px solid rgba(56, 152, 255, 0.38);
-      color: var(--color-text-primary);
-      font-family: var(--font-sans);
-      font-size: 0.71rem;
-      font-weight: 600;
-      padding: 4px 9px;
-      border-radius: 8px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .day-pills-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-top: 5px;
-    }
-
-    .day-chip {
-      font-family: var(--font-sans);
-      font-size: 0.69rem;
-      padding: 3px 8px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--color-border-subtle);
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .day-chip.selected {
-      background: rgba(45, 212, 191, 0.18);
-      border-color: var(--color-semantic-confirm);
-      color: var(--color-text-primary);
-      font-weight: 700;
+      transform: translateX(20px);
     }
 
     @keyframes bubbleEnter {
@@ -1079,7 +915,7 @@
     .mochi-svg[data-state="offline"] .eye-dot { opacity: 0; }
     .mochi-svg[data-state="offline"] .eye-sleepy-arc { opacity: 1; }
 
-    /* Compact Overlay Mode Overrides */
+    /* Compact Overlay Mode Overrides (As defined in Phase 3b & Phase 4) */
     .app-viewport.has-overlay .mochi-svg .mochi-badge-group,
     .app-viewport.has-overlay .mochi-svg .mochi-orbit-ring,
     .app-viewport.has-overlay .mochi-svg .mochi-ripple-ring {
@@ -1158,23 +994,18 @@
 
   <div class="shell-container">
     <aside class="fidelity-banner">
-      <strong>✅ تحديثات المراجعة المعتمدة (Phase 4b — Changed in v1.1 + Vision v1.3 Summary):</strong>
-      <ul>
-        <li><strong>شاشة الخمول الصافية (1A vs 1B):</strong> إزالة التلميحات الدائمة من شاشة العودة (<code>1A. Returning Idle</code> تعرض Mochi + مؤشر المايك فقط)، وقصر التوجيه وتلميح الكتابة على أول زيارة (<code>1B. First Visit</code>) أو رفض المايك.</li>
-        <li><strong>إصلاح التباين (Contrast AA/AAA):</strong> إضافة <code>--color-text-offline</code> لنص مؤشر المايك المتوقف (9.74:1) وتغميق <code>--color-text-muted</code> في الوضع الفاتح إلى <code>#526071</code> (5.14:1+).</li>
-        <li><strong>اتساق الأرقام واللغة (الشاشات 2، 4، 6، 7):</strong> أرقام غربية (<code>0-9</code>) في كل مكان، صيغة المذكر (<code>رتّبلي</code>)، وقت محدد (<code>06:30 م</code>)، إزالة <code>(Quiet Focus)</code> من الشاشة 6، واستبدال «بدون أي لوم» في الشاشة 7 بصياغة محايدة.</li>
-        <li><strong>الشاشة 8 (الرؤية v1.3) والشاشة 10 (فصل الأعطال):</strong> سقف <strong>2 يومياً</strong> لتذكيرات Mochi التلقائية فقط (الصباح/المساء/الغياب <code>Off</code>)، سؤال «لسه معايا؟» بعد <strong>60 دقيقة</strong> من التايمر، هدوء قابل للتعديل <code>11:00 م – 08:00 ص</code>، محدد أيام الإجازة (الجمعة + اليوم إجازة)، وفصل <code>10A</code> (رفض المايك + خطوات التفعيل) عن <code>10B</code> (انقطاع الاتصال).</li>
-      </ul>
+      <strong>✅ ملاحظة المطابقة مع Mochi المعتمد (Phase 3 Fidelity Note):</strong>
+      تم استخدام نفس كود الـ SVG المعتمد في المرحلة الثالثة (`Superellipse n=2.7`، التدرجات الكروية، مواضع العيون والخدود، والشارة العلوية) بدون أي تعديل في تصميم الكاركتر. عند فتح أي طبقة Overlay، ينتقل Mochi تلقائياً إلى الحجم المدمج (<code>96×88px</code> على الهاتف) مع إخفاء الشارة العلوية وتكبير العيون بنسبة <code>+18%</code> لسهولة القراءة.
     </aside>
 
     <header class="top-bar">
       <div>
-        <h1>🍡 Mochi AI — المرجع البصري للشاشات ونظام التصميم (Phase 4b — v1.1)</h1>
+        <h1>🍡 Mochi AI — المرجع البصري للشاشات ونظام التصميم (Phase 4 Screens)</h1>
       </div>
       <div class="top-bar-toggles">
         <label class="pill-toggle">
           <input type="checkbox" id="toggle-light-theme" />
-          <span>Light Theme (ورق الأرز — مصحح التباين v1.1)</span>
+          <span>Light Theme (ورق الأرز الدافئ)</span>
         </label>
         <label class="pill-toggle">
           <input type="checkbox" id="toggle-reduced-motion" />
@@ -1183,11 +1014,8 @@
       </div>
     </header>
 
-    <!-- Screen Switcher Buttons -->
+    <!-- Screen Switcher Buttons (12 Screens covering all 10 required + Roadmap & Offline) -->
     <nav class="screen-switcher" id="screen-tabs" aria-label="مبدل الشاشات"></nav>
-
-    <!-- Active Screen v1.1 Change Note -->
-    <div class="screen-v11-note" id="active-v11-banner"></div>
 
     <!-- Side-by-Side 380px Phone Frame & Desktop Frame -->
     <main class="devices-stage">
@@ -1272,7 +1100,7 @@
     function renderMicIndicator(micState) {
       const configs = {
         off: {
-          icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-semantic-offline)" stroke-width="2.2" stroke-linecap="round"><line x1="2" y1="2" x2="22" y2="22"/><path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2"/><path d="M5 10v2a7 7 0 0 0 12 5"/><path d="M15 9.34V5a3 3 0 0 0-5.68-1.33"/></svg>`,
+          icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="2" y1="2" x2="22" y2="22"/><path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2"/><path d="M5 10v2a7 7 0 0 0 12 5"/><path d="M15 9.34V5a3 3 0 0 0-5.68-1.33"/></svg>`,
           cue: "○",
           label: "المايك متوقف"
         },
@@ -1282,7 +1110,7 @@
           label: "بيسمعك • إيقاف"
         },
         paused: {
-          icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-semantic-offline)" stroke-width="2.4"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`,
+          icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`,
           cue: "■",
           label: "متوقف مؤقتاً • استئناف"
         },
@@ -1298,9 +1126,8 @@
         }
       };
       const c = configs[micState] || configs.off;
-      const clickTarget = (micState === "unavailable" || micState === "permission") ? "9-typing" : "2-home-listening";
       return `
-        <button class="mic-indicator-pill" data-mic-state="${micState}" onclick="selectScreen('${clickTarget}')" aria-label="حالة المايك: ${c.label}">
+        <button class="mic-indicator-pill" data-mic-state="${micState}" aria-label="حالة المايك: ${c.label}">
           <span class="mic-shape-cue">${c.icon}</span>
           <span aria-hidden="true" style="font-size:0.7rem;">${c.cue}</span>
           <span>${c.label}</span>
@@ -1308,74 +1135,20 @@
       `;
     }
 
-    function cycleStillWithMe(btn) {
-      const steps = ["بعد 60 د ✎", "بعد 30 د ✎", "بعد 90 د ✎"];
-      const current = btn.getAttribute("data-idx") ? parseInt(btn.getAttribute("data-idx"), 10) : 0;
-      const next = (current + 1) % steps.length;
-      btn.setAttribute("data-idx", next);
-      btn.textContent = steps[next];
-    }
-
-    function cycleQuietHours(btn) {
-      const spans = btn.closest(".setting-row").querySelector(".qh-label");
-      if (spans.dataset.alt === "1") {
-        spans.innerHTML = `من <span class="tabular-time">11:00</span> م إلى <span class="tabular-time">08:00</span> ص`;
-        spans.dataset.alt = "0";
-      } else {
-        spans.innerHTML = `من <span class="tabular-time">10:30</span> م إلى <span class="tabular-time">07:30</span> ص`;
-        spans.dataset.alt = "1";
-      }
-    }
-
-    function toggleTodayOff(btn) {
-      const isOff = btn.getAttribute("data-off") === "1";
-      if (isOff) {
-        btn.setAttribute("data-off", "0");
-        btn.textContent = "🏖️ النهارده إجازة";
-        btn.style.background = "rgba(56, 152, 255, 0.14)";
-        btn.style.borderColor = "rgba(56, 152, 255, 0.38)";
-      } else {
-        btn.setAttribute("data-off", "1");
-        btn.textContent = "✓ اليوم إجازة (مفعّل)";
-        btn.style.background = "rgba(45, 212, 191, 0.2)";
-        btn.style.borderColor = "var(--color-semantic-confirm)";
-      }
-    }
-
     const SCREENS = [
       {
-        id: "1a-home-returning-idle",
-        title: "1A. الرئيسية — زيارة عائدة (Idle)",
-        sub: "Returning Idle (Mochi + Mic Only)",
-        changedInV11: true,
-        v11Note: "changed in v1.1: إزالة التلميحات الدائمة أسفل Mochi تماماً في الزيارات العائدة؛ الشاشة تعرض Mochi ومؤشر المايك فقط (مع بقاء اختصار الكيبورد المخفي).",
-        mochiState: "idle",
-        micState: "off",
-        hasOverlay: false,
-        stageHTML: `
-          <!-- Pure Character + Mic Indicator Only on Returning Idle -->
-          <button class="sr-only-focusable" onclick="selectScreen('9-typing')">⌨️ افتح حقل الكتابة الاحتياطي</button>
-        `,
-        overlayHTML: ""
-      },
-      {
-        id: "1b-home-first-visit",
-        title: "1B. الرئيسية — أول زيارة فقط",
-        sub: "First-Visit Onboarding (Once)",
-        changedInV11: true,
-        v11Note: "changed in v1.1: شاشة أول زيارة إطلاقاً (تظهر مرة واحدة فقط قبل أول تفاعل) وتحتوي على سطر التوجيه وتلميح الكتابة.",
+        id: "1-home-idle",
+        title: "1. الرئيسية — خامل (Idle)",
+        sub: "Home / Idle / Mic Off",
         mochiState: "idle",
         micState: "off",
         hasOverlay: false,
         stageHTML: `
           <div class="captions-stack">
-            <div class="first-visit-onboarding-box">
-              <span class="v11-tag">Shown Once on First Visit</span>
-              <p style="font-size:0.88rem; color:var(--color-text-secondary);">
-                المس Mochi عشان تبدأ تتكلم معاه
-              </p>
-              <button class="subtle-typing-trigger" onclick="selectScreen('9-typing')">⌨️ أو اكتب لو مش حابب تستخدم الصوت</button>
-            </div>
+            <p style="font-size:0.86rem; color:var(--color-text-muted); text-align:center;">
+              المس Mochi في أي وقت عشان تبدأ تتكلم معاه
+            </p>
+            <button class="subtle-typing-trigger" onclick="selectScreen('9-typing')">⌨️ أو اكتب لـ Mochi بهدوء</button>
           </div>
         `,
         overlayHTML: ""
@@ -1384,15 +1157,13 @@
         id: "2-home-listening",
         title: "2. الاستماع وكلام المستخدم",
         sub: "Listening + User Speech",
-        changedInV11: true,
-        v11Note: "changed in v1.1: توحيد الرقم إلى الغربي (2 بدلاً من ٢) وتصحيح الفعل لصيغة المذكر («ورتّبلي» بدلاً من «ورتّبيلي»).",
         mochiState: "hearing",
         micState: "listening",
         hasOverlay: false,
         stageHTML: `
           <div class="captions-stack" aria-live="polite">
             <div class="user-transcript-bubble">
-              «عايز أراجع الـ <span class="en-term">API integration</span> قبل اجتماع الساعة <span class="tabular-time">2</span>، ورتّبلي باقي اليوم»
+              «عايز أراجع الـ <span class="en-term">API integration</span> قبل اجتماع الساعة ٢، ورتّبيلي باقي اليوم»
               <div class="transcript-meta">
                 <span>● جاري التقاط كلامك (مؤقت ولا يُحفظ خام)</span>
                 <span style="text-decoration:underline; cursor:pointer;" onclick="selectScreen('9-typing')">✎ تصحيح</span>
@@ -1406,15 +1177,13 @@
         id: "3-home-replying",
         title: "3. رد Mochi مع الـ Caption",
         sub: "Mochi Speaking + Caption",
-        changedInV11: true,
-        v11Note: "changed in v1.1: تحويل مدة الدقائق من الأرقام الهندية (٤٥) إلى الأرقام الغربية الموحدة (45 دقيقة).",
         mochiState: "speaking",
         micState: "off",
         hasOverlay: false,
         stageHTML: `
           <div class="captions-stack" aria-live="polite">
             <div class="mochi-reply-bubble">
-              تمام يا محمود. خلّينا نبدأ بـ <span class="en-term">API integration</span> دلوقتي لمدة <span class="tabular-time">45</span> دقيقة قبل الزحمة. تحب أشغّل تايمر التركيز؟
+              تمام يا محمود. خلّينا نبدأ بـ <span class="en-term">API integration</span> دلوقتي لمدة ٤٥ دقيقة قبل الزحمة. تحب أشغّل تايمر التركيز؟
             </div>
             <p style="font-size:0.75rem; color:var(--color-text-muted);">
               المس Mochi لو حابب تقاطعه أو تعدّل الاقتراح
@@ -1427,15 +1196,13 @@
         id: "4-confirm-card",
         title: "4. بطاقة الموافقة على التعديل",
         sub: "Schedule Change Consent",
-        changedInV11: true,
-        v11Note: "changed in v1.1: استبدال «لبعد المغرب» بالوقت المحدد المطابق للبطاقة (06:30 م) وتوحيد لاحقة الوقت العربية (ص/م).",
         mochiState: "curious",
         micState: "listening",
         hasOverlay: false,
         stageHTML: `
           <div class="captions-stack">
             <div class="mochi-reply-bubble" style="font-size:0.95rem; padding:10px 14px;">
-              عشان المشوار الطارئ، أقترح نأجّل مراجعة الـ <span class="en-term">UI Layout Review</span> للساعة <span class="tabular-time">06:30</span> م. مناسب ليك أحفظ التعديل ده؟
+              عشان المشوار الطارئ، أقترح نأجّل مراجعة الـ <span class="en-term">UI Review</span> لبعد المغرب. مناسب ليك أحفظ التعديل ده؟
             </div>
           </div>
         `,
@@ -1450,14 +1217,14 @@
                 <span>المهمة: <strong class="en-term">UI Layout Review</strong></span>
               </div>
               <div class="diff-row">
-                <span class="diff-old">قبل: اليوم <span class="tabular-time">02:00</span> م</span>
+                <span class="diff-old">قبل: اليوم <span class="tabular-time">02:00 PM</span></span>
                 <span>←</span>
-                <span class="diff-new">بعد: اليوم <span class="tabular-time">06:30</span> م</span>
+                <span class="diff-new">بعد: اليوم <span class="tabular-time">06:30 PM</span></span>
               </div>
             </div>
             <div class="action-buttons-row">
-              <button class="btn-primary-confirm" onclick="selectScreen('1a-home-returning-idle')">✓ موافق، احفظ التعديل</button>
-              <button class="btn-secondary-cancel" onclick="selectScreen('1a-home-returning-idle')">✕ لا، خليه زي ما هو</button>
+              <button class="btn-primary-confirm" onclick="selectScreen('1-home-idle')">✓ موافق، احفظ التعديل</button>
+              <button class="btn-secondary-cancel" onclick="selectScreen('1-home-idle')">✕ لا، خليه زي ما هو</button>
             </div>
           </section>
         `
@@ -1466,8 +1233,6 @@
         id: "5-day-timeline",
         title: "5. جدول اليوم (مع Mochi مدمج)",
         sub: "Day Timeline + Compact Mochi",
-        changedInV11: true,
-        v11Note: "changed in v1.1: تعريب التاريخ إلى «22 أكتوبر» وتوحيد اللواحق الزمنية إلى «ص / م» مع أرقام غربية.",
         mochiState: "idle",
         micState: "off",
         hasOverlay: true,
@@ -1477,35 +1242,35 @@
         overlayHTML: `
           <section class="overlay-sheet" aria-label="جدول النهارده">
             <div class="overlay-header">
-              <div class="overlay-title">📅 جدول النهارده <span style="font-size:0.82rem; color:var(--color-text-muted); font-weight:normal;"><span class="tabular-time">22</span> أكتوبر</span></div>
-              <button class="overlay-close-btn" onclick="selectScreen('1a-home-returning-idle')">✕ اخفي الجدول</button>
+              <div class="overlay-title">📅 جدول النهارده <span class="tabular-time" style="font-size:0.8rem; color:var(--color-text-muted); font-weight:normal;">22 Oct</span></div>
+              <button class="overlay-close-btn" onclick="selectScreen('1-home-idle')">✕ اخفي الجدول</button>
             </div>
             <div class="task-list">
               <div class="task-item done">
                 <div class="task-info">
                   <span class="task-name">مراجعة أولويات الصبح</span>
-                  <span class="task-sub"><span class="tabular-time">09:30</span> ص • <span class="tabular-time">15</span> دقيقة</span>
+                  <span class="task-sub"><span class="tabular-time">09:30 AM</span> • 15 دقيقة</span>
                 </div>
                 <span class="status-tag tag-done">✓ خلصت</span>
               </div>
               <div class="task-item current">
                 <div class="task-info">
                   <span class="task-name">ربط <span class="en-term">API Integration</span></span>
-                  <span class="task-sub"><span class="tabular-time">11:00</span> ص • <span class="tabular-time">45</span> دقيقة</span>
+                  <span class="task-sub"><span class="tabular-time">11:00 AM</span> • 45 دقيقة</span>
                 </div>
                 <span class="status-tag tag-active">● جارية الآن</span>
               </div>
               <div class="task-item">
                 <div class="task-info">
                   <span class="task-name">اجتماع مراجعة <span class="en-term">ERP</span></span>
-                  <span class="task-sub"><span class="tabular-time">02:00</span> م • <span class="tabular-time">30</span> دقيقة</span>
+                  <span class="task-sub"><span class="tabular-time">02:00 PM</span> • 30 دقيقة</span>
                 </div>
                 <span class="status-tag tag-upcoming">قادمة</span>
               </div>
               <div class="task-item">
                 <div class="task-info">
                   <span class="task-name">تجهيز ملفات <span class="en-term">Open-Source Repo</span></span>
-                  <span class="task-sub"><span class="tabular-time">04:30</span> م • <span class="tabular-time">40</span> دقيقة</span>
+                  <span class="task-sub"><span class="tabular-time">04:30 PM</span> • 40 دقيقة</span>
                 </div>
                 <span class="status-tag tag-upcoming">قادمة</span>
               </div>
@@ -1515,21 +1280,19 @@
       },
       {
         id: "6-focus-timer",
-        title: "6. تايمر التركيز",
-        sub: "Focus Timer Overlay",
-        changedInV11: true,
-        v11Note: "changed in v1.1: إزالة التسمية البرمجية الإنجليزية المسربة «(Quiet Focus)» من النص المرئي أسفل Mochi واستخدام صياغة عربية طبيعية.",
+        title: "6. تايمر التركيز (Quiet Focus)",
+        sub: "Focus Timer + Quiet State",
         mochiState: "focus",
         micState: "off",
         hasOverlay: true,
         stageHTML: `
-          <span class="compact-return-hint">حضور هادئ معاك — المايك متوقف</span>
+          <span class="compact-return-hint">حضور هادئ (Quiet Focus) — المايك متوقف</span>
         `,
         overlayHTML: `
           <section class="overlay-sheet" aria-label="تايمر التركيز">
             <div class="overlay-header">
               <div class="overlay-title">🎯 جلسة تركيز هادئة</div>
-              <button class="overlay-close-btn" onclick="selectScreen('1a-home-returning-idle')">اخفي التايمر</button>
+              <button class="overlay-close-btn" onclick="selectScreen('1-home-idle')">اخفي التايمر</button>
             </div>
             <div class="focus-timer-box">
               <div style="font-size:0.88rem; color:var(--color-text-secondary);">المهمة الحالية: <strong>ضبط <span class="en-term">Tailwind v4 Tokens</span></strong></div>
@@ -1538,11 +1301,11 @@
                 <div class="progress-bar-fill" style="width: 50%;"></div>
               </div>
               <div style="font-size:0.78rem; color:var(--color-semantic-caution); margin-bottom:10px;">
-                ✨ عدّى نص الوقت (<span class="tabular-time">50%</span>) — خد نفس وكمل براحتك
+                ✨ عدّى نص الوقت (50%) — خد نفس وكمل براحتك
               </div>
               <div class="action-buttons-row">
                 <button class="btn-secondary-cancel">⏸ إيقاف مؤقت</button>
-                <button class="btn-primary-confirm" onclick="selectScreen('1a-home-returning-idle')">✓ خلصت المهمة</button>
+                <button class="btn-primary-confirm" onclick="selectScreen('1-home-idle')">✓ خلصت المهمة</button>
               </div>
             </div>
           </section>
@@ -1552,30 +1315,28 @@
         id: "7-eod-summary",
         title: "7. ملخص ومراجعة آخر اليوم",
         sub: "End-of-Day Summary",
-        changedInV11: true,
-        v11Note: "changed in v1.1: استبدال عبارة «بدون أي لوم» بسطر محايد هادئ («ملخص هادئ لخطوات النهارده وبكرة»)، واستخدام الأرقام الغربية في (3) و(1).",
         mochiState: "proud",
         micState: "off",
         hasOverlay: true,
         stageHTML: `
-          <span class="compact-return-hint">ملخص هادئ لخطوات النهارده وبكرة</span>
+          <span class="compact-return-hint">مراجعة هادئة بدون أي لوم</span>
         `,
         overlayHTML: `
           <section class="overlay-sheet" aria-label="ملخص آخر اليوم">
             <div class="overlay-header">
               <div class="overlay-title">🌙 مراجعة النهارده بهدوء</div>
-              <button class="overlay-close-btn" onclick="selectScreen('1a-home-returning-idle')">✕ خلاص كده</button>
+              <button class="overlay-close-btn" onclick="selectScreen('1-home-idle')">✕ خلاص كده</button>
             </div>
             <div class="task-list">
               <div class="task-item">
                 <div class="task-info">
-                  <span class="task-name" style="color:var(--color-semantic-confirm);">✓ اتعمل النهارده (<span class="tabular-time">3</span>)</span>
-                  <span class="task-sub">أولويات الصبح + ربط الـ <span class="en-term">API</span> + مراجعة الـ <span class="en-term">ERP</span></span>
+                  <span class="task-name" style="color:var(--color-semantic-confirm);">✓ اتعمل النهارده (٢)</span>
+                  <span class="task-sub">أولويات الصبح + ربط الـ <span class="en-term">API Integration</span></span>
                 </div>
               </div>
               <div class="task-item">
                 <div class="task-info">
-                  <span class="task-name">⏳ لسه متعملش (<span class="tabular-time">1</span> — نختارله ميعاد يناسبك)</span>
+                  <span class="task-name">⏳ لسه متعملش (١ — بدون استعجال)</span>
                   <span class="task-sub">تجهيز ملفات <span class="en-term">Open-Source Repo</span></span>
                 </div>
                 <span class="status-tag tag-moved">مقترح لبكرة</span>
@@ -1583,23 +1344,21 @@
               <div class="task-item current">
                 <div class="task-info">
                   <span class="task-name">☀️ أول خطوة مقترحة لبكرة الصبح</span>
-                  <span class="task-sub">تجهيز الـ <span class="en-term">Repo</span> الساعة <span class="tabular-time">10:00</span> ص</span>
+                  <span class="task-sub">تجهيز الـ <span class="en-term">Repo</span> الساعة <span class="tabular-time">10:00 AM</span></span>
                 </div>
               </div>
             </div>
             <div class="action-buttons-row" style="margin-top:12px;">
-              <button class="btn-primary-confirm" onclick="selectScreen('1a-home-returning-idle')">✓ اعتمد خطة بكرة</button>
-              <button class="btn-secondary-cancel" onclick="selectScreen('1a-home-returning-idle')">سيبها من غير ميعاد</button>
+              <button class="btn-primary-confirm" onclick="selectScreen('1-home-idle')">✓ اعتمد خطة بكرة</button>
+              <button class="btn-secondary-cancel" onclick="selectScreen('1-home-idle')">سيبها من غير ميعاد</button>
             </div>
           </section>
         `
       },
       {
         id: "8-notif-settings",
-        title: "8. إعدادات التذكيرات (v1.3)",
-        sub: "Notification Settings (Vision v1.3)",
-        changedInV11: true,
-        v11Note: "changed in v1.1: تحديث شامل لـ Vision v1.3: سقف 2/يوم لتذكيرات Mochi فقط (تايمر التركيز لا يُحتسب)، سؤال «لسه معايا؟» بعد 60 دقيقة، هدوء قابل للتعديل 11:00 م – 08:00 ص، ومحدد أيام الإجازة.",
+        title: "8. إعدادات الإشعارات والهدوء",
+        sub: "Notification Settings Overlay",
         mochiState: "idle",
         micState: "off",
         hasOverlay: true,
@@ -1610,94 +1369,38 @@
           <section class="overlay-sheet" aria-label="إعدادات الإشعارات">
             <div class="overlay-header">
               <div class="overlay-title">🔔 إعدادات التذكيرات الهادئة</div>
-              <button class="overlay-close-btn" onclick="selectScreen('1a-home-returning-idle')">✕ إغلاق</button>
+              <button class="overlay-close-btn" onclick="selectScreen('1-home-idle')">✕ إغلاق</button>
             </div>
-
-            <div style="font-size:0.74rem; color:var(--color-semantic-confirm); margin-bottom:8px; line-height:1.45;">
-              ● الحد الأقصى: <strong><span class="tabular-time">2</span> تذكير في اليوم</strong> يبدأهم Mochi بنفسه (تذكيرات تايمر التركيز اللي بتبدأه بنفسك لا تُحتسب ضمن الحد).
+            <div style="font-size:0.78rem; color:var(--color-semantic-confirm); margin-bottom:10px;">
+              ● الحالة الفعلية: مفعّلة حسب الإذن (بحد أقصى ٤ تذكيرات يومياً)
             </div>
-
-            <div class="settings-group-label">
-              <span>تذكيرات جلساتك ومهامك (لا تُحتسب من حد الـ <span class="tabular-time">2</span> يومياً)</span>
-            </div>
-
             <div class="setting-row">
               <div>
-                <div style="font-weight:600;">تايمر التركيز (<span class="tabular-time">50%</span> ونهاية الوقت) + قبل المهمة بـ <span class="tabular-time">5</span> د</div>
-                <div style="font-size:0.7rem; color:var(--color-text-muted);">تذكير نصي صامت للجلسات اللي بدأتها بنفسك</div>
+                <div style="font-weight:600;">تذكيرات جلسة التركيز (50% ونهاية الوقت)</div>
+                <div style="font-size:0.73rem; color:var(--color-text-muted);">تذكير نصي صامت بدون تشغيل صوت تلقائي</div>
               </div>
               <div class="switch-pill on" onclick="this.classList.toggle('on')"></div>
             </div>
-
             <div class="setting-row">
               <div>
-                <div style="font-weight:600;">سؤال «لسه معايا؟» بعد انتهاء تايمر التركيز</div>
-                <div style="font-size:0.7rem; color:var(--color-text-muted);">يتبعت مرة واحدة بس لو مفيش نشاط (المدة قابلة للتعديل)</div>
+                <div style="font-weight:600;">تذكير بداية المهمة (قبلها بـ 5 دقائق)</div>
+                <div style="font-size:0.73rem; color:var(--color-text-muted);">مرة واحدة لكل مهمة محددة بوقت</div>
               </div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <button class="inline-edit-chip" onclick="cycleStillWithMe(this)" title="اضغط لتغيير المدة">بعد <span class="tabular-time">60</span> د ✎</button>
-                <div class="switch-pill on" onclick="this.classList.toggle('on')"></div>
-              </div>
+              <div class="switch-pill on" onclick="this.classList.toggle('on')"></div>
             </div>
-
-            <div class="settings-group-label">
-              <span>تذكيرات يبدأها Mochi بنفسه (بحد أقصى <span class="tabular-time">2</span> يومياً — مقفولة افتراضياً)</span>
-            </div>
-
-            <div class="setting-row">
-              <div>
-                <div style="font-weight:600;">تذكير بداية الصبح (<span class="tabular-time">08:30</span> ص)</div>
-              </div>
-              <div class="switch-pill" onclick="this.classList.toggle('on')"></div>
-            </div>
-
-            <div class="setting-row">
-              <div>
-                <div style="font-weight:600;">مراجعة آخر اليوم (<span class="tabular-time">08:30</span> م)</div>
-              </div>
-              <div class="switch-pill" onclick="this.classList.toggle('on')"></div>
-            </div>
-
-            <div class="setting-row">
-              <div>
-                <div style="font-weight:600;">ترحيب هادئ بعد غياب (<span class="tabular-time">3</span> أيام)</div>
-              </div>
-              <div class="switch-pill" onclick="this.classList.toggle('on')"></div>
-            </div>
-
-            <div class="settings-group-label">
-              <span>ساعات الهدوء وأيام الإجازة والخصوصية</span>
-            </div>
-
-            <div class="setting-row">
-              <div>
-                <div style="font-weight:600;">ساعات الهدوء (<span class="en-term">Quiet Hours</span>)</div>
-                <div class="qh-label" style="font-size:0.72rem; color:var(--color-text-secondary);">من <span class="tabular-time">11:00</span> م إلى <span class="tabular-time">08:00</span> ص</div>
-              </div>
-              <button class="inline-edit-chip" onclick="cycleQuietHours(this)">✎ تعديل الوقت</button>
-            </div>
-
-            <div class="setting-row" style="flex-direction:column; align-items:stretch;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:600;">أيام الإجازة الأسبوعية (الجمعة افتراضياً)</span>
-                <button class="inline-edit-chip" onclick="toggleTodayOff(this)">🏖️ النهارده إجازة</button>
-              </div>
-              <div class="day-pills-row">
-                <span class="day-chip" onclick="this.classList.toggle('selected')">السبت</span>
-                <span class="day-chip" onclick="this.classList.toggle('selected')">الأحد</span>
-                <span class="day-chip" onclick="this.classList.toggle('selected')">الاثنين</span>
-                <span class="day-chip" onclick="this.classList.toggle('selected')">الثلاثاء</span>
-                <span class="day-chip" onclick="this.classList.toggle('selected')">الأربعاء</span>
-                <span class="day-chip" onclick="this.classList.toggle('selected')">الخميس</span>
-                <span class="day-chip selected" onclick="this.classList.toggle('selected')">الجمعة ✓</span>
-              </div>
-            </div>
-
             <div class="setting-row">
               <div>
                 <div style="font-weight:600;">إخفاء اسم المهمة على شاشة القفل</div>
+                <div style="font-size:0.73rem; color:var(--color-text-muted);">لحماية خصوصية مشاريعك على الموبايل</div>
               </div>
               <div class="switch-pill on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <div class="setting-row">
+              <div>
+                <div style="font-weight:600;">ساعات الهدوء (<span class="en-term">Quiet Hours</span>)</div>
+                <div style="font-size:0.73rem; color:var(--color-text-muted);">من <span class="tabular-time">10:00 PM</span> إلى <span class="tabular-time">08:00 AM</span> + يوم الإجازة</div>
+              </div>
+              <span class="status-tag tag-active">نشط</span>
             </div>
           </section>
         `
@@ -1706,8 +1409,6 @@
         id: "9-typing",
         title: "9. مسار الكتابة الاحتياطي مفتوح",
         sub: "Hidden Typing Fallback Open",
-        changedInV11: true,
-        v11Note: "changed in v1.1: تحويل الساعة داخل حقل الكتابة إلى رقم غربي («للساعة 4 العصر») واستخدام --color-text-offline لنص مؤشر المايك المتوقف مؤقتاً.",
         mochiState: "paused",
         micState: "paused",
         hasOverlay: false,
@@ -1717,40 +1418,27 @@
               المايك متوقف دلوقتي عشان تاخد راحتك. اكتب اللي تحبه وهرد عليك هنا.
             </div>
             <div class="typing-fallback-bar">
-              <input class="typing-input" type="text" value="انقل مراجعة الـ API للساعة 4 العصر" aria-label="اكتب أمرك لـ Mochi" />
+              <input class="typing-input" type="text" value="انقل مراجعة الـ API للساعة ٤ العصر" aria-label="اكتب أمرك لـ Mochi" />
               <button class="typing-send-btn" onclick="selectScreen('4-confirm-card')">إرسال ↵</button>
-              <button class="typing-close-btn" onclick="selectScreen('1a-home-returning-idle')" title="إغلاق الكتابة">✕</button>
+              <button class="typing-close-btn" onclick="selectScreen('1-home-idle')" title="إغلاق الكتابة">✕</button>
             </div>
           </div>
         `,
         overlayHTML: ""
       },
       {
-        id: "10a-error-mic-denied",
-        title: "10A. عطل: رفض إذن المايك فقط",
-        sub: "Mic Permission Denied + Steps",
-        changedInV11: true,
-        v11Note: "changed in v1.1: فصل رفض إذن المايك في شاشة مستقلة برسالة من جملتين قصيرتين، مع إضافة خطوات استعادة الإذن لـ Chrome وSamsung Internet على أندرويد وChrome على ويندوز.",
+        id: "10-error-offline",
+        title: "10. حالة رفض المايك / Offline",
+        sub: "Mic Denied Error & Offline",
         mochiState: "error",
         micState: "unavailable",
         hasOverlay: false,
         stageHTML: `
           <div class="captions-stack">
-            <div class="mochi-reply-bubble" style="border-color:rgba(245,158,11,0.45); font-size:0.96rem;">
-              إذن المايك مقفول حالياً من إعدادات المتصفح. تقدر تكمّل بالكتابة دلوقتي، أو تفتح الإذن ونجرّب تاني.
+            <div class="mochi-reply-bubble" style="border-color:rgba(245,158,11,0.45);">
+              إذن المايك مقفول من إعدادات المتصفح حالياً، أو مفيش اتصال بالخدمة. ولا يهمك، تقدر تكمّل بالكتابة فوراً أو نجرّب تاني.
             </div>
-            <details class="mic-help-details" open>
-              <summary>
-                <span>🔧 إزاي تفتح إذن المايك؟ (خطوات سريعة)</span>
-                <span style="font-size:0.7rem; color:var(--color-semantic-caution);">▼</span>
-              </summary>
-              <ul class="mic-help-list">
-                <li><strong><span class="en-term">Chrome</span> على أندرويد:</strong> اضغط علامة الضبط/القفل جنب عنوان الصفحة ← <strong>الأذونات</strong> ← فعّل <strong>الميكروفون</strong>.</li>
-                <li><strong><span class="en-term">Samsung Internet</span>:</strong> القائمة (<strong>☰</strong>) ← <strong>إعدادات الموقع</strong> ← <strong>الميكروفون</strong> ← اسمح للموقع.</li>
-                <li><strong><span class="en-term">Chrome</span> على ويندوز:</strong> اضغط أيقونة القفل/الإعدادات على يمين أو يسار شريط العنوان ← فعّل مفتاح <strong>الميكروفون</strong>.</li>
-              </ul>
-            </details>
-            <div class="action-buttons-row" style="width:100%; margin-top:4px;">
+            <div class="action-buttons-row" style="width:100%;">
               <button class="btn-primary-confirm" style="background:var(--color-semantic-caution);" onclick="selectScreen('9-typing')">⌨️ كمّل بالكتابة دلوقتي</button>
               <button class="btn-secondary-cancel" onclick="selectScreen('2-home-listening')">🔄 إعادة المحاولة</button>
             </div>
@@ -1759,44 +1447,20 @@
         overlayHTML: ""
       },
       {
-        id: "10b-offline-state",
-        title: "10B. عطل: انقطاع الإنترنت / الخدمة",
-        sub: "Offline / Service Error Only",
-        changedInV11: true,
-        v11Note: "changed in v1.1: شاشة مستقلة تماماً لانقطاع الشبكة أو تعطل الخدمة (بدون خلطها بإذن المايك) برسالة قصيرة من جملتين وتباين نصي AAA.",
-        mochiState: "offline",
-        micState: "off",
-        hasOverlay: false,
-        stageHTML: `
-          <div class="captions-stack">
-            <div class="mochi-reply-bubble" style="border-color:var(--color-semantic-offline); font-size:0.98rem;">
-              مفيش اتصال بالإنترنت أو الخدمة متوقفة مؤقتاً دلوقتي. جدولك المحفوظ متاح، وأول ما الشبكة ترجع المسني ونكمّل.
-            </div>
-            <div class="action-buttons-row" style="width:100%;">
-              <button class="btn-secondary-cancel" onclick="selectScreen('5-day-timeline')">📅 اعرض الجدول المحفوظ</button>
-              <button class="btn-secondary-cancel" onclick="selectScreen('2-home-listening')">🔄 إعادة المحاولة</button>
-            </div>
-          </div>
-        `,
-        overlayHTML: ""
-      },
-      {
         id: "11-roadmap-overlay",
-        title: "11. تقدم الـ Roadmap",
+        title: "11. تقدم الـ Roadmap (إضافي)",
         sub: "Roadmap Progress Overlay",
-        changedInV11: true,
-        v11Note: "changed in v1.1: تحويل أرقام المراحل من (٣، ٤، ٥) إلى الأرقام الغربية الموحدة (3، 4، 5).",
         mochiState: "thinking",
         micState: "off",
         hasOverlay: true,
         stageHTML: `
-          <span class="compact-return-hint">ملخص مركز لـ <span class="tabular-time">3</span> نقاط فقط بدون زحمة</span>
+          <span class="compact-return-hint">ملخص مركز لـ 3 نقاط فقط بدون زحمة</span>
         `,
         overlayHTML: `
           <section class="overlay-sheet" aria-label="تقدم الـ Roadmap">
             <div class="overlay-header">
               <div class="overlay-title">🗺️ <span class="en-term">Mochi AI v1 Roadmap</span></div>
-              <button class="overlay-close-btn" onclick="selectScreen('1a-home-returning-idle')">✕ إغلاق</button>
+              <button class="overlay-close-btn" onclick="selectScreen('1-home-idle')">✕ إغلاق</button>
             </div>
             <div class="progress-bar-track" style="margin-bottom:14px;">
               <div class="progress-bar-fill" style="width: 65%; background:var(--color-semantic-thinking);"></div>
@@ -1804,21 +1468,21 @@
             <div class="task-list">
               <div class="task-item done">
                 <div class="task-info">
-                  <span class="task-name">المرحلة <span class="tabular-time">3</span>: تصميم الكاركتر والحركة</span>
+                  <span class="task-name">المرحلة ٣: تصميم الكاركتر والحركة</span>
                   <span class="task-sub">اكتملت (<span class="en-term">16 States + SVG Spec</span>)</span>
                 </div>
                 <span class="status-tag tag-done">✓ مكتملة</span>
               </div>
               <div class="task-item current">
                 <div class="task-info">
-                  <span class="task-name">المرحلة <span class="tabular-time">4</span>: نظام التصميم والشاشات</span>
-                  <span class="task-sub">مراجعة الألوان والـ <span class="en-term">Overlays (v1.1)</span></span>
+                  <span class="task-name">المرحلة ٤: نظام التصميم والشاشات</span>
+                  <span class="task-sub">مراجعة الألوان والـ <span class="en-term">Overlays</span></span>
                 </div>
                 <span class="status-tag tag-active">● الحالية</span>
               </div>
               <div class="task-item">
                 <div class="task-info">
-                  <span class="task-name">المرحلة <span class="tabular-time">5</span>: شخصية الصوت والـ <span class="en-term">Prompts</span></span>
+                  <span class="task-name">المرحلة ٥: شخصية الصوت والـ <span class="en-term">Prompts</span></span>
                   <span class="task-sub">الخطوة الجاية مباشرة بعد الاعتماد</span>
                 </div>
                 <span class="status-tag tag-upcoming">الجاية ←</span>
@@ -1826,22 +1490,39 @@
             </div>
           </section>
         `
+      },
+      {
+        id: "12-offline-state",
+        title: "12. حالة انقطاع الإنترنت (Offline)",
+        sub: "Calm Offline Recovery",
+        mochiState: "offline",
+        micState: "off",
+        hasOverlay: false,
+        stageHTML: `
+          <div class="captions-stack">
+            <div class="mochi-reply-bubble" style="border-color:rgba(100,116,139,0.5);">
+              الإنترنت فاصل دلوقتي، فمش هقدر أنفّذ طلبات صوتية جديدة. جدولك المحفوظ لسه موجود، وأول ما الشبكة ترجع تقدر تلمسني ونكمّل.
+            </div>
+            <div class="action-buttons-row" style="width:100%;">
+              <button class="btn-secondary-cancel" onclick="selectScreen('5-day-timeline')">📅 اعرض الجدول المحفوظ</button>
+              <button class="btn-secondary-cancel" onclick="selectScreen('1-home-idle')">🔄 فحص الاتصال</button>
+            </div>
+          </div>
+        `,
+        overlayHTML: ""
       }
     ];
 
     const tabsContainer = document.getElementById("screen-tabs");
     const phoneMount = document.getElementById("phone-mount");
     const desktopMount = document.getElementById("desktop-mount");
-    const v11Banner = document.getElementById("active-v11-banner");
-    let currentScreenId = "1a-home-returning-idle";
 
     function buildViewportMarkup(scr) {
-      const nextTarget = scr.hasOverlay ? "1a-home-returning-idle" : "2-home-listening";
       return `
         <div class="app-viewport ${scr.hasOverlay ? "has-overlay" : ""}">
           ${renderMicIndicator(scr.micState)}
           <div class="mochi-stage-column">
-            <div class="mochi-character-box" onclick="selectScreen('${nextTarget}')" tabindex="0" role="button" aria-label="شخصية Mochi — المس للتفاعل">
+            <div class="mochi-character-box" onclick="selectScreen(scr.hasOverlay ? '1-home-idle' : '2-home-listening')" tabindex="0" role="button" aria-label="شخصية Mochi — المس للتفاعل">
               ${renderMochiCharacter(scr.mochiState)}
             </div>
             ${scr.stageHTML}
@@ -1853,17 +1534,9 @@
 
     function selectScreen(screenId) {
       const scr = SCREENS.find((s) => s.id === screenId) || SCREENS[0];
-      currentScreenId = scr.id;
-
       document.querySelectorAll(".screen-tab").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.id === scr.id);
       });
-
-      v11Banner.innerHTML = `
-        <span><strong>${scr.title}:</strong> ${scr.v11Note}</span>
-        ${scr.changedInV11 ? `<span class="v11-tag">changed in v1.1</span>` : ""}
-      `;
-
       const markup = buildViewportMarkup(scr);
       phoneMount.innerHTML = markup;
       desktopMount.innerHTML = markup;
@@ -1873,37 +1546,13 @@
       const btn = document.createElement("button");
       btn.className = "screen-tab";
       btn.dataset.id = scr.id;
-      btn.innerHTML = `
-        <div class="screen-tab-top">
-          <span>${scr.title}</span>
-          ${scr.changedInV11 ? `<span class="v11-tag">v1.1</span>` : ""}
-        </div>
-        <span class="sub">${scr.sub}</span>
-      `;
+      btn.innerHTML = `<span>${scr.title}</span><span class="sub">${scr.sub}</span>`;
       btn.addEventListener("click", () => selectScreen(scr.id));
       tabsContainer.appendChild(btn);
     });
 
-    // Global Hidden Keyboard Fallback Listener (Press any printable letter on Idle to open Typing Bar)
-    window.addEventListener("keydown", (e) => {
-      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
-      if (e.key === "Escape" && currentScreenId !== "1a-home-returning-idle") {
-        selectScreen("1a-home-returning-idle");
-        return;
-      }
-      if (
-        (currentScreenId === "1a-home-returning-idle" || currentScreenId === "1b-home-first-visit") &&
-        e.key.length === 1 &&
-        !e.ctrlKey &&
-        !e.metaKey &&
-        !e.altKey
-      ) {
-        selectScreen("9-typing");
-      }
-    });
-
-    // Initialize with Screen 1A (Returning Visit Idle: Mochi + Mic Only)
-    selectScreen("1a-home-returning-idle");
+    // Initialize with Screen 1
+    selectScreen("1-home-idle");
 
     // Theme & Reduced Motion Toggles
     document.getElementById("toggle-light-theme").addEventListener("change", (e) => {
