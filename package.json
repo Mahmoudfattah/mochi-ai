@@ -7,10 +7,20 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --write package.json eslint.config.js vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.json index.html README.md CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md src .github docs/HANDOFF.md",
+    "format:check": "prettier --check package.json eslint.config.js vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.json index.html README.md CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md src .github docs/HANDOFF.md",
     "preview": "vite preview"
   },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "dependencies": {
-    "motion": "^14.5.0",
+    "@fontsource/cairo": "^5.3.0",
+    "@fontsource/ibm-plex-sans-arabic": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
@@ -25,9 +35,11 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "^17.13.0",
+    "prettier": "^3.9.10",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.71.2",
-    "vite": "^8.3.4"
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
   }
 }
