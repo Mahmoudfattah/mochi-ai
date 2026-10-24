@@ -1,3 +1,5 @@
+> SUPERSEDED by 06_SCOPE_AND_ARCHITECTURE.md. Kept for history.
+
 # Mochi AI — Architecture (Locked Contracts v1.0)
 
 Agreed by: Mahmoud + Claude + Gemini.
