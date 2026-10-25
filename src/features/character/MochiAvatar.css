@@ -391,6 +391,45 @@ button.mochi-avatar:focus-visible {
     var(--motion-look-easing) both;
 }
 
+.mochi-svg[data-motion-preset="reference"][data-micro="look-left"]
+  .mochi-face-group,
+.mochi-svg[data-motion-preset="reference"][data-micro="look-right"]
+  .mochi-face-group {
+  animation: none;
+  transition: transform var(--look-transition-duration)
+    var(--look-transition-easing);
+}
+
+.mochi-svg[data-motion-preset="reference"][data-micro="look-left"]
+  .mochi-face-group {
+  transform: translate3d(
+    var(--motion-look-left-x),
+    var(--motion-look-y),
+    0
+  ) !important;
+}
+
+.mochi-svg[data-motion-preset="reference"][data-micro="look-right"]
+  .mochi-face-group {
+  transform: translate3d(
+    var(--motion-look-right-x),
+    var(--motion-look-y),
+    0
+  ) !important;
+}
+
+.mochi-svg[data-motion-preset="reference"][data-micro="look-left"]
+  .mochi-pose-group {
+  animation: none;
+  transform: rotate(var(--motion-look-left-tilt)) !important;
+}
+
+.mochi-svg[data-motion-preset="reference"][data-micro="look-right"]
+  .mochi-pose-group {
+  animation: none;
+  transform: rotate(var(--motion-look-right-tilt)) !important;
+}
+
 .mochi-svg[data-micro="deep-breath"] .mochi-pose-group {
   animation: microDeepBreath var(--motion-deep-breath-duration)
     var(--motion-deep-breath-easing) both;

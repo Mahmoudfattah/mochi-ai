@@ -1,10 +1,14 @@
 import { cleanup, render, screen, act } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { MochiAvatar } from "./MochiAvatar";
 import { MOCHI_STATES, type MochiAvatarHandle } from "./types";
 import { createRef } from "react";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+  vi.restoreAllMocks();
+});
 
 describe("MochiAvatar", () => {
   it.each(MOCHI_STATES)(
@@ -50,5 +54,26 @@ describe("MochiAvatar", () => {
     act(() => ref.current?.setAudioLevel(0.72));
 
     expect(svg?.style.getPropertyValue("--audio-level")).toBe("0.72");
+  });
+
+  it("runs the reference look as a left-to-right sweep", () => {
+    vi.useFakeTimers();
+    vi.spyOn(Math, "random")
+      .mockReturnValueOnce(0)
+      .mockReturnValueOnce(0.4)
+      .mockReturnValue(0);
+    const { container } = render(
+      <MochiAvatar state="idle" motionPreset="reference" />,
+    );
+    const avatar = container.querySelector("svg");
+
+    act(() => vi.advanceTimersByTime(5000));
+    expect(avatar?.dataset.micro).toBe("look-left");
+
+    act(() => vi.advanceTimersByTime(700));
+    expect(avatar?.dataset.micro).toBe("look-right");
+
+    act(() => vi.advanceTimersByTime(800));
+    expect(avatar?.dataset.micro).toBeUndefined();
   });
 });

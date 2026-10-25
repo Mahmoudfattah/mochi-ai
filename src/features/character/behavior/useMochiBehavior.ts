@@ -7,8 +7,10 @@ import {
 } from "./microExpressionScheduler";
 import {
   DEFAULT_MOCHI_MOTION_PRESET,
+  MOTION_PRESETS,
   POINTER_FOLLOW_CONFIG,
   REFERENCE_DOUBLE_BLINK_PHASES_MS,
+  REFERENCE_LOOK_SWITCH_AT_MS,
   type MochiMotionPreset,
 } from "./motionPresets";
 
@@ -77,6 +79,23 @@ export function useMochiBehavior({
               delete svg.dataset.micro;
               microTimersRef.current = [];
             }, finishAtMs),
+          ];
+          return;
+        }
+
+        if (
+          motionPreset === "reference" &&
+          (id === "look-left" || id === "look-right")
+        ) {
+          svg.dataset.micro = "look-left";
+          microTimersRef.current = [
+            window.setTimeout(() => {
+              svg.dataset.micro = "look-right";
+            }, REFERENCE_LOOK_SWITCH_AT_MS),
+            window.setTimeout(() => {
+              delete svg.dataset.micro;
+              microTimersRef.current = [];
+            }, MOTION_PRESETS.reference.look.durationMs),
           ];
           return;
         }

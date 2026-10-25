@@ -70,6 +70,7 @@ const sharedMicroExpressions = [
 ] as const;
 
 export const REFERENCE_DOUBLE_BLINK_PHASES_MS = [90, 180, 270] as const;
+export const REFERENCE_LOOK_SWITCH_AT_MS = 700;
 
 function createMotionPreset(
   config: Omit<MotionPresetConfig, "microExpressions">,
