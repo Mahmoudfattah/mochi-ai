@@ -3,6 +3,9 @@ export interface AppConfig {
     name: string;
     gender: "male" | "female";
   };
+  accessibility: {
+    characterLabel: string;
+  };
   locale: string;
   quietHours: {
     start: string;
@@ -15,6 +18,9 @@ export const defaultConfig: AppConfig = {
   persona: {
     name: "Mochi",
     gender: "male",
+  },
+  accessibility: {
+    characterLabel: "موتشي",
   },
   locale: "ar-EG",
   quietHours: {

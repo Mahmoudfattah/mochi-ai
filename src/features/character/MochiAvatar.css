@@ -1,0 +1,766 @@
+.mochi-avatar {
+  display: block;
+  width: 280px;
+  height: 256px;
+  min-width: 64px;
+  min-height: 58px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  container-type: inline-size;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button.mochi-avatar {
+  cursor: pointer;
+  color: inherit;
+}
+
+button.mochi-avatar:focus-visible {
+  outline: 3px solid var(--color-focus-ring, #60a5fa);
+  outline-offset: 6px;
+}
+
+.mochi-avatar--compact {
+  width: 96px;
+  height: 88px;
+}
+
+.mochi-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  --glow-opacity: 0.08;
+  --blush-opacity: 0.12;
+  --badge-opacity: 0;
+  --hands-opacity: 0;
+  --orbit-opacity: 0;
+  --ripple-opacity: 0;
+  --particles-opacity: 0;
+  --tint-blue-opacity: 0;
+  --tint-purple-opacity: 0;
+  --tint-amber-opacity: 0;
+  --tint-slate-opacity: 0;
+  --pose-x: 0px;
+  --pose-y: 0px;
+  --pose-scale-x: 1;
+  --pose-scale-y: 1;
+  --pose-tilt: 0deg;
+  --face-x: 0px;
+  --face-y: 0px;
+  --look-x: 0px;
+  --look-y: 0px;
+  --look-tilt: 0deg;
+  --audio-level: 0;
+  --audio-face-y: 0px;
+  --eye-left-scale: 1;
+  --eye-right-scale: 1;
+  --breathing-amplitude: 0.018;
+  --float-distance: -6px;
+  --breath-duration: 4s;
+  --breath-easing: ease-in-out;
+  --arc-stroke: 6.5;
+}
+
+.mochi-float-group,
+.mochi-pose-group,
+.mochi-face-group,
+.mochi-eye-left,
+.mochi-eye-right,
+.mochi-blush-group,
+.mochi-hands-group,
+.mochi-badge-group,
+.mochi-ambient-glow,
+.mochi-floor-shadow {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform var(--look-transition-duration) var(--look-transition-easing),
+    opacity 300ms ease;
+}
+
+.mochi-float-group {
+  animation: mochiFloat var(--breath-duration) var(--breath-easing) infinite;
+}
+
+.mochi-floor-shadow {
+  animation: shadowPulse var(--breath-duration) ease-in-out infinite;
+}
+
+.mochi-pose-group {
+  transform: translate3d(var(--pose-x), var(--pose-y), 0)
+    rotate(calc(var(--pose-tilt) + var(--look-tilt)))
+    scale(var(--pose-scale-x), var(--pose-scale-y));
+}
+
+.mochi-svg[data-audio-reactive="true"] .mochi-pose-group {
+  transform: translate3d(
+      var(--pose-x),
+      calc(var(--pose-y) + var(--audio-level) * -7px),
+      0
+    )
+    rotate(var(--pose-tilt))
+    scale(
+      calc(var(--pose-scale-x) - var(--audio-level) * 0.045),
+      calc(var(--pose-scale-y) + var(--audio-level) * 0.065)
+    );
+  transition: transform 65ms linear;
+}
+
+.mochi-face-group {
+  transform: translate3d(
+    calc(var(--face-x) + var(--look-x)),
+    calc(var(--face-y) + var(--look-y) + var(--audio-face-y)),
+    0
+  );
+}
+
+.mochi-eye-left {
+  transform: scale(var(--eye-left-scale));
+}
+
+.mochi-eye-right {
+  transform: scale(var(--eye-right-scale));
+}
+
+.mochi-ambient-glow {
+  opacity: var(--glow-opacity);
+}
+
+.mochi-blush-group {
+  opacity: var(--blush-opacity);
+}
+
+.mochi-badge-group {
+  opacity: var(--badge-opacity);
+  transform-box: view-box;
+  transform-origin: 68px 56px;
+  transform: scale(var(--badge-scale));
+}
+
+.badge-pill-shape,
+.badge-circle-shape {
+  transition: opacity 180ms ease;
+}
+
+.mochi-svg[data-badge-kind="none"] .mochi-badge-group,
+.mochi-svg[data-badge-kind="none"] .badge-pill-shape,
+.mochi-svg[data-badge-kind="none"] .badge-circle-shape,
+.mochi-svg[data-badge-kind="pill"] .badge-circle-shape,
+.mochi-svg[data-badge-kind="circle"] .badge-pill-shape {
+  opacity: 0;
+}
+
+.mochi-svg[data-badge-kind="pill"] .badge-pill-shape,
+.mochi-svg[data-badge-kind="circle"] .badge-circle-shape {
+  opacity: 1;
+}
+
+.mochi-hands-group,
+.mochi-orbit-ring,
+.mochi-ripple-ring,
+.mochi-particles-group {
+  opacity: var(--hands-opacity);
+  transition: opacity 300ms ease;
+}
+
+.mochi-orbit-ring {
+  opacity: var(--orbit-opacity);
+}
+
+.mochi-ripple-ring {
+  opacity: var(--ripple-opacity);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.mochi-svg[data-ripple="true"] .mochi-ripple-ring {
+  animation: rippleWave var(--ripple-duration) cubic-bezier(0.16, 1, 0.3, 1)
+    infinite;
+}
+
+.mochi-particles-group {
+  opacity: var(--particles-opacity);
+}
+
+.mochi-svg[data-hands-kind="right"] .mochi-hand-left {
+  opacity: 0;
+}
+
+.mochi-svg[data-pose-order="rotate-translate"] .mochi-pose-group {
+  transform: rotate(calc(var(--pose-tilt) + var(--look-tilt)))
+    translate3d(var(--pose-x), var(--pose-y), 0)
+    scale(var(--pose-scale-x), var(--pose-scale-y));
+}
+
+.tint-blue,
+.tint-purple,
+.tint-amber,
+.tint-slate {
+  transition: opacity 320ms ease;
+}
+
+.tint-blue {
+  opacity: var(--tint-blue-opacity);
+}
+
+.tint-purple {
+  opacity: var(--tint-purple-opacity);
+}
+
+.tint-amber {
+  opacity: var(--tint-amber-opacity);
+}
+
+.tint-slate {
+  opacity: var(--tint-slate-opacity);
+}
+
+.eye-dot,
+.eye-happy-arc,
+.eye-flat-line,
+.eye-sleepy-arc {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    opacity 160ms ease,
+    transform 220ms ease;
+}
+
+.eye-dot {
+  opacity: var(--eye-opacity);
+}
+
+.eye-happy-arc,
+.eye-flat-line,
+.eye-sleepy-arc {
+  opacity: 0;
+}
+
+.mochi-svg[data-eye-variant="happy"] .eye-dot,
+.mochi-svg[data-eye-variant="flat"] .eye-dot,
+.mochi-svg[data-eye-variant="sleepy"] .eye-dot {
+  opacity: 0;
+}
+
+.mochi-svg[data-eye-variant="happy"] .eye-happy-arc,
+.mochi-svg[data-eye-variant="flat"] .eye-flat-line,
+.mochi-svg[data-eye-variant="sleepy"] .eye-sleepy-arc {
+  opacity: 1;
+}
+
+.badge-dot {
+  animation: badgeDotsPulse 1.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.badge-dot-2 {
+  animation-delay: 0.2s;
+}
+
+.badge-dot-3 {
+  animation-delay: 0.4s;
+}
+
+.particle-dot {
+  animation: particleTwinkle 2.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.particle-dot-2 {
+  animation-delay: 0.25s;
+}
+
+.particle-dot-3 {
+  animation-delay: 0.5s;
+}
+
+.particle-dot-4 {
+  animation-delay: 0.15s;
+}
+
+.particle-dot-5 {
+  animation-delay: 0.4s;
+}
+
+.particle-dot-6 {
+  animation-delay: 0.7s;
+}
+
+.particle-dot-7 {
+  animation-delay: 0.85s;
+}
+
+.particle-dot-8 {
+  animation-delay: 0.2s;
+}
+
+.particle-dot-9 {
+  animation-delay: 0.6s;
+}
+
+.particle-dot-10 {
+  animation-delay: 0.35s;
+}
+
+.particle-dot-11 {
+  animation-delay: 0.95s;
+}
+
+.particle-dot-12 {
+  animation-delay: 0.55s;
+}
+
+.mochi-svg[data-size="compact"] .mochi-badge-group,
+.mochi-svg[data-size="compact"] .mochi-hands-group,
+.mochi-svg[data-size="compact"] .mochi-particles-group,
+.mochi-svg[data-size="compact"] .mochi-orbit-ring {
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+.mochi-svg[data-size="compact"] .mochi-eye-left,
+.mochi-svg[data-size="compact"] .mochi-eye-right {
+  transform: scale(calc(var(--eye-left-scale) * 1.18));
+}
+
+.mochi-svg[data-size="compact"] .mochi-eye-right {
+  transform: scale(calc(var(--eye-right-scale) * 1.18));
+}
+
+.mochi-svg[data-size="compact"] .eye-happy-arc,
+.mochi-svg[data-size="compact"] .eye-sleepy-arc {
+  stroke-width: var(--arc-stroke);
+}
+
+.mochi-svg[data-size="compact"] .mochi-float-group {
+  animation-name: mochiFloat;
+}
+
+.mochi-svg[data-micro="double-blink"] .eye-dot {
+  animation: microDoubleBlink var(--motion-blink-duration) linear both;
+}
+
+.mochi-svg[data-motion-preset="reference"][data-micro="double-blink"] .eye-dot {
+  animation: none;
+  transform: scaleY(var(--motion-blink-closed-scale-y)) !important;
+  transition: transform var(--motion-blink-transition-duration)
+    var(--motion-blink-transition-easing) !important;
+}
+
+.mochi-svg[data-micro="wink"] .mochi-eye-right .eye-dot {
+  animation: microWinkDot var(--motion-wink-duration) var(--motion-wink-easing)
+    both;
+}
+
+.mochi-svg[data-micro="wink"] .mochi-eye-right .eye-happy-arc {
+  animation: microWinkArc var(--motion-wink-duration) var(--motion-wink-easing)
+    both;
+}
+
+.mochi-svg[data-micro="wink"] .mochi-pose-group {
+  animation: microWinkTilt var(--motion-wink-duration) var(--motion-wink-easing)
+    both;
+}
+
+.mochi-svg[data-micro="wink"] .mochi-blush-group {
+  animation: microWinkBlush var(--motion-wink-duration)
+    var(--motion-wink-easing) both;
+}
+
+.mochi-svg[data-micro="look-left"] .mochi-face-group {
+  animation: microLookLeft var(--motion-look-duration) var(--motion-look-easing)
+    both;
+}
+
+.mochi-svg[data-micro="look-left"] .mochi-pose-group {
+  animation: microTiltLeft var(--motion-look-duration) var(--motion-look-easing)
+    both;
+}
+
+.mochi-svg[data-micro="look-right"] .mochi-face-group {
+  animation: microLookRight var(--motion-look-duration)
+    var(--motion-look-easing) both;
+}
+
+.mochi-svg[data-micro="look-right"] .mochi-pose-group {
+  animation: microTiltRight var(--motion-look-duration)
+    var(--motion-look-easing) both;
+}
+
+.mochi-svg[data-micro="deep-breath"] .mochi-pose-group {
+  animation: microDeepBreath var(--motion-deep-breath-duration)
+    var(--motion-deep-breath-easing) both;
+}
+
+.mochi-svg[data-micro="deep-breath"] .eye-dot {
+  animation: microSighEyes var(--motion-deep-breath-duration)
+    var(--motion-deep-breath-easing) both;
+}
+
+.mochi-svg[data-micro="jelly"] .mochi-pose-group {
+  animation: microJelly var(--motion-jelly-duration) var(--motion-jelly-easing)
+    both;
+}
+
+.mochi-svg[data-micro="micro-happy"] .eye-dot {
+  animation: microHappyDot var(--motion-happy-duration)
+    var(--motion-happy-easing) both;
+}
+
+.mochi-svg[data-micro="micro-happy"] .eye-happy-arc,
+.mochi-svg[data-micro="micro-happy"] .mochi-blush-group {
+  animation: microHappyArc var(--motion-happy-duration)
+    var(--motion-happy-easing) both;
+}
+
+.mochi-svg[data-reduced-motion="true"] .mochi-float-group,
+.mochi-svg[data-reduced-motion="true"] .mochi-floor-shadow,
+.mochi-svg[data-reduced-motion="true"] .mochi-ripple-ring,
+.mochi-svg[data-reduced-motion="true"] .mochi-orbit-ring,
+.mochi-svg[data-reduced-motion="true"] .particle-dot,
+.mochi-svg[data-reduced-motion="true"] .badge-dot {
+  animation: none !important;
+}
+
+.mochi-svg[data-reduced-motion="true"] .mochi-float-group,
+.mochi-svg[data-reduced-motion="true"] .mochi-floor-shadow,
+.mochi-svg[data-reduced-motion="true"] .mochi-ripple-ring,
+.mochi-svg[data-reduced-motion="true"] .mochi-orbit-ring,
+.mochi-svg[data-reduced-motion="true"] .particle-dot,
+.mochi-svg[data-reduced-motion="true"] .badge-dot,
+.mochi-svg[data-reduced-motion="true"] .mochi-pose-group {
+  transition-duration: 0.01ms;
+}
+
+.mochi-svg[data-reduced-motion="true"] .tint-blue,
+.mochi-svg[data-reduced-motion="true"] .tint-purple,
+.mochi-svg[data-reduced-motion="true"] .tint-amber,
+.mochi-svg[data-reduced-motion="true"] .tint-slate,
+.mochi-svg[data-reduced-motion="true"] .mochi-ambient-glow,
+.mochi-svg[data-reduced-motion="true"] .mochi-badge-group {
+  transition-duration: 300ms;
+}
+
+.mochi-svg[data-reduced-motion="true"] .eye-dot,
+.mochi-svg[data-reduced-motion="true"] .eye-happy-arc,
+.mochi-svg[data-reduced-motion="true"] .eye-flat-line,
+.mochi-svg[data-reduced-motion="true"] .eye-sleepy-arc {
+  transition-duration: 0.01ms;
+}
+
+.mochi-svg[data-reduced-motion="true"] .mochi-hands-group {
+  transition-duration: 0.01ms;
+}
+
+.mochi-svg[data-reduced-motion="true"] .mochi-particles-group,
+.mochi-svg[data-reduced-motion="true"] .mochi-orbit-ring,
+.mochi-svg[data-reduced-motion="true"] .mochi-ripple-ring {
+  opacity: 0;
+}
+
+.mochi-svg[data-reduced-motion="true"][data-reduced-hands="false"]
+  .mochi-hands-group {
+  opacity: 0;
+}
+
+@container (max-width: 70px) {
+  .mochi-svg[data-size="compact"] .mochi-floor-shadow,
+  .mochi-svg[data-size="compact"] .mochi-ambient-glow,
+  .mochi-svg[data-size="compact"] .mochi-blush-group {
+    display: none;
+  }
+
+  .mochi-svg[data-size="compact"] {
+    --arc-stroke: 8.5;
+  }
+
+  .mochi-svg[data-size="compact"] .mochi-float-group {
+    --float-distance: -1.5px;
+    --breathing-amplitude: 0.01;
+  }
+
+  .mochi-svg[data-size="compact"] .eye-happy-arc,
+  .mochi-svg[data-size="compact"] .eye-sleepy-arc {
+    stroke-width: 8.5;
+  }
+}
+
+@keyframes mochiFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1, 1);
+  }
+
+  50% {
+    transform: translate3d(0, var(--float-distance), 0)
+      scale(
+        calc(1 + var(--breathing-amplitude)),
+        calc(1 - var(--breathing-amplitude))
+      );
+  }
+}
+
+@keyframes shadowPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.48;
+  }
+
+  50% {
+    transform: scale(0.88);
+    opacity: 0.32;
+  }
+}
+
+@keyframes badgeDotsPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.88);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes rippleWave {
+  0% {
+    transform: scale(0.86);
+    opacity: 0.45;
+  }
+
+  100% {
+    transform: scale(1.36);
+    opacity: 0;
+  }
+}
+
+@keyframes particleTwinkle {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(0.65);
+    opacity: 0.2;
+  }
+
+  50% {
+    transform: translate3d(0, -5px, 0) scale(1.18);
+    opacity: 0.95;
+  }
+}
+
+@keyframes microDoubleBlink {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  18.42%,
+  57.89% {
+    transform: scaleY(var(--motion-blink-closed-scale-y));
+  }
+
+  39.47%,
+  78.95% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes microWinkDot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  15%,
+  80% {
+    opacity: 0;
+  }
+}
+
+@keyframes microWinkArc {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  15%,
+  80% {
+    opacity: 1;
+  }
+}
+
+@keyframes microWinkTilt {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+
+  15%,
+  80% {
+    transform: rotate(var(--motion-wink-tilt));
+  }
+}
+
+@keyframes microWinkBlush {
+  0%,
+  100% {
+    opacity: var(--blush-opacity);
+  }
+
+  15%,
+  80% {
+    opacity: 0.48;
+  }
+}
+
+@keyframes microLookLeft {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  35%,
+  65% {
+    transform: translate3d(var(--motion-look-left-x), var(--motion-look-y), 0);
+  }
+}
+
+@keyframes microLookRight {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  35%,
+  65% {
+    transform: translate3d(var(--motion-look-right-x), var(--motion-look-y), 0);
+  }
+}
+
+@keyframes microTiltLeft {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+
+  35%,
+  65% {
+    transform: rotate(var(--motion-look-left-tilt));
+  }
+}
+
+@keyframes microTiltRight {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+
+  35%,
+  65% {
+    transform: rotate(var(--motion-look-right-tilt));
+  }
+}
+
+@keyframes microDeepBreath {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1, 1);
+  }
+
+  25%,
+  65% {
+    transform: translate3d(0, var(--motion-deep-breath-rise), 0)
+      scale(
+        var(--motion-deep-breath-scale-x),
+        var(--motion-deep-breath-scale-y)
+      );
+  }
+}
+
+@keyframes microSighEyes {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  25%,
+  65% {
+    transform: scaleY(var(--motion-deep-breath-eye-scale-y));
+  }
+}
+
+@keyframes microJelly {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+
+  30% {
+    transform: scale(
+      var(--motion-jelly-peak-scale-x),
+      var(--motion-jelly-peak-scale-y)
+    );
+  }
+
+  65% {
+    transform: scale(
+      var(--motion-jelly-settle-scale-x),
+      var(--motion-jelly-settle-scale-y)
+    );
+  }
+}
+
+@keyframes microHappyDot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  10%,
+  85% {
+    opacity: 0;
+  }
+}
+
+@keyframes microHappyArc {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  10%,
+  85% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mochi-svg .mochi-float-group,
+  .mochi-svg .mochi-floor-shadow,
+  .mochi-svg .mochi-ripple-ring,
+  .mochi-svg .mochi-orbit-ring,
+  .mochi-svg .particle-dot,
+  .mochi-svg .badge-dot {
+    animation: none !important;
+  }
+
+  .mochi-svg * {
+    transition-duration: 0.01ms;
+  }
+
+  .mochi-svg .tint-blue,
+  .mochi-svg .tint-purple,
+  .mochi-svg .tint-amber,
+  .mochi-svg .tint-slate,
+  .mochi-svg .mochi-ambient-glow,
+  .mochi-svg .mochi-badge-group {
+    transition-duration: 300ms;
+  }
+}
