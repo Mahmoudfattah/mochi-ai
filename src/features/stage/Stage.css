@@ -1,0 +1,560 @@
+.mochi-stage {
+  position: relative;
+  display: grid;
+  min-height: 100svh;
+  overflow: hidden;
+  place-items: center;
+  padding: max(16px, env(safe-area-inset-top)) 16px
+    max(16px, env(safe-area-inset-bottom));
+  background: var(--color-canvas);
+  color: var(--color-ink-primary);
+  font-family: var(--font-sans);
+}
+
+.stage-mochi-caption p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.stage-character {
+  display: grid;
+  width: min(100%, 300px);
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+}
+
+.stage-content {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.stage-character .mochi-avatar {
+  width: min(68vw, 256px);
+  height: auto;
+}
+
+.stage-character .mochi-svg {
+  width: 100%;
+  height: auto;
+}
+
+.stage-onboarding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border: 1px dashed var(--color-line-strong);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 10px 14px;
+  text-align: center;
+  color: var(--color-ink-secondary);
+  font-size: 14px;
+}
+
+.stage-onboarding p {
+  margin: 0;
+}
+
+.stage-onboarding button,
+.stage-recovery-card button,
+.stage-typing button,
+.stage-dev-toolbar button {
+  min-height: 44px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+  color: var(--color-ink-primary);
+  padding: 8px 14px;
+  font: inherit;
+}
+
+.stage-onboarding button {
+  border: 1px solid var(--color-line-subtle);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-ink-secondary);
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+.stage-mic-wrap {
+  position: absolute;
+  z-index: 25;
+  top: max(26px, env(safe-area-inset-top));
+  inset-inline-start: 16px;
+}
+
+.stage-mic-button {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1.5px solid var(--color-semantic-offline);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-elevated);
+  color: var(--color-ink-offline);
+  padding: 6px 13px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: var(--shadow-floating-pill);
+  transition:
+    transform 150ms ease,
+    border-color 200ms ease,
+    background 200ms ease;
+}
+
+.stage-mic-button:hover {
+  transform: translateY(-1px);
+}
+
+.stage-mic-button:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.stage-mic-listening .stage-mic-button,
+.stage-mic-hearingSpeech .stage-mic-button {
+  background: rgba(56, 152, 255, 0.16);
+  border-color: var(--color-semantic-active);
+  color: var(--color-ink-primary);
+  box-shadow:
+    0 0 0 1px var(--color-semantic-active) inset,
+    var(--shadow-floating-pill);
+}
+
+.stage-mic-followUpWindow .stage-mic-button {
+  background: rgba(56, 152, 255, 0.16);
+  border-color: var(--color-semantic-active);
+  color: var(--color-ink-primary);
+  box-shadow:
+    0 0 0 1px var(--color-semantic-active) inset,
+    var(--shadow-floating-pill);
+}
+
+.stage-mic-waitingPermission .stage-mic-button {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: var(--color-semantic-caution);
+  color: var(--color-ink-primary);
+}
+
+.stage-mic-unavailable .stage-mic-button {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: var(--color-semantic-caution);
+  color: var(--color-ink-primary);
+}
+
+.stage-mic-pausedMuted .stage-mic-button {
+  background: rgba(100, 116, 139, 0.16);
+  border-style: dashed;
+}
+
+.stage-mic-error .stage-mic-button {
+  border-color: var(--color-semantic-offline);
+}
+
+.mic-icon {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
+}
+
+.mic-icon-off,
+.mic-icon-paused {
+  color: var(--color-semantic-offline);
+  stroke-width: 2.4;
+}
+
+.mic-icon-listening {
+  color: var(--color-semantic-active);
+  stroke-width: 2.4;
+}
+
+.mic-icon-permission,
+.mic-icon-unavailable {
+  color: var(--color-semantic-caution);
+  stroke-width: 2.4;
+}
+
+.mic-shape {
+  font-variant-numeric: tabular-nums;
+}
+
+.stage-captions {
+  position: relative;
+  display: grid;
+  width: min(100%, 344px);
+  gap: 10px;
+  margin-top: 14px;
+  text-align: center;
+}
+
+.stage-captions p {
+  margin: 0;
+}
+
+.stage-user-caption,
+.stage-mochi-caption {
+  max-height: 132px;
+  overflow: auto;
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  line-height: 1.6;
+  animation: caption-enter 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.stage-user-caption-wrap {
+  position: relative;
+}
+
+.stage-transcript-meta,
+.stage-speaking-hint {
+  color: var(--color-ink-muted);
+  font-size: 12px;
+}
+
+.stage-correction {
+  margin-top: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--color-ink-muted);
+  font: inherit;
+  font-size: 12px;
+}
+
+.stage-user-caption {
+  border: 1.5px dashed var(--color-line-transcript);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-transcript);
+  color: var(--color-ink-primary);
+  font-size: 16px;
+}
+
+.stage-mochi-caption {
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-caption);
+  box-shadow: var(--shadow-card);
+  color: var(--color-ink-primary);
+  padding: 14px 18px;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.65;
+}
+
+.stage-caption-overflow {
+  display: block;
+  margin-top: 6px;
+  color: var(--color-ink-muted);
+  font-size: 12px;
+}
+
+.stage-recovery-card,
+.stage-typing {
+  position: relative;
+  display: grid;
+  gap: var(--spacing-3);
+  width: min(100%, 344px);
+  margin: 14px auto 0;
+  border: 1px solid var(--color-line-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-elevated);
+  box-shadow: var(--shadow-card);
+  padding: var(--spacing-4);
+}
+
+.stage-recovery-actions {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.stage-recovery-card h2,
+.stage-recovery-card p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.stage-recovery-card details {
+  width: 100%;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+  padding: 9px 12px;
+  color: var(--color-ink-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: start;
+}
+
+.stage-recovery-card summary {
+  cursor: pointer;
+  color: var(--color-ink-primary);
+  font-weight: 600;
+}
+
+.stage-typing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  border: 1.5px solid var(--color-semantic-active);
+  padding: 8px 10px;
+  animation: typing-enter 200ms ease-out;
+}
+
+.stage-typing-prompt {
+  width: min(100%, 344px);
+  margin: 8px auto 0;
+}
+
+.stage-typing input {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  border: 0;
+  background: transparent;
+  color: var(--color-ink-primary);
+  padding: 6px 8px;
+  font: inherit;
+  font-size: 16px;
+}
+
+.stage-dev-toolbar input {
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-canvas);
+  color: var(--color-ink-primary);
+  padding: 8px 12px;
+  font: inherit;
+}
+
+.stage-typing .stage-typing-close {
+  min-width: 44px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--color-ink-secondary);
+  padding: 0;
+  font-size: 14px;
+}
+
+.stage-typing .stage-typing-submit {
+  min-width: 44px;
+  min-height: 40px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--color-semantic-active);
+  color: var(--color-ink-on-accent);
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.stage-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.stage-service-notice {
+  position: absolute;
+  top: max(68px, calc(env(safe-area-inset-top) + 52px));
+  inset-inline-start: 16px;
+  max-width: calc(100% - 32px);
+  margin: 0;
+  color: var(--color-ink-offline);
+  font-size: 12px;
+}
+
+.stage-sr-only-focusable {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+}
+
+.stage-sr-only-focusable:focus {
+  z-index: 4;
+  top: 70px;
+  inset-inline-start: 16px;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+  padding: 12px;
+}
+
+.stage-dev-toggle {
+  position: absolute;
+  bottom: max(8px, env(safe-area-inset-bottom));
+  inset-inline-end: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--color-ink-muted);
+  opacity: 0.24;
+  font: inherit;
+  font-size: 10px;
+}
+
+.stage-dev-toolbar {
+  position: fixed;
+  z-index: 5;
+  inset-inline: 12px;
+  bottom: 12px;
+  max-height: min(70vh, 560px);
+  overflow: auto;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-elevated);
+  box-shadow: var(--shadow-card);
+  padding: 16px;
+}
+
+.stage-dev-toolbar h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.toolbar-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.toolbar-actions label {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 6px;
+}
+
+.stage-mic-button:focus-visible,
+.stage-correction:focus-visible,
+.stage-onboarding button:focus-visible,
+.stage-recovery-card button:focus-visible,
+.stage-typing button:focus-visible,
+.stage-typing input:focus-visible,
+.stage-dev-toggle:focus-visible,
+.stage-dev-toolbar button:focus-visible,
+.stage-dev-toolbar input:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+@keyframes caption-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes typing-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 768px) {
+  .stage-character .mochi-avatar {
+    width: 300px;
+  }
+
+  .stage-mic-wrap {
+    top: max(28px, env(safe-area-inset-top));
+    inset-inline-start: 32px;
+  }
+
+  .stage-captions {
+    width: min(100%, 480px);
+    max-width: 480px;
+  }
+
+  .stage-recovery-card,
+  .stage-typing {
+    width: min(100%, 480px);
+  }
+}
+
+@media (max-width: 379px) {
+  .stage-character .mochi-svg {
+    width: min(220px, 68vw);
+  }
+}
+
+@media (max-width: 767px) and (max-height: 499px) {
+  .stage-content {
+    display: grid;
+    grid-template-columns: 40% 60%;
+    grid-auto-rows: min-content;
+    align-items: center;
+  }
+
+  .stage-character {
+    grid-column: 1;
+    grid-row: 1 / span 5;
+    width: 100%;
+    transform: none;
+  }
+
+  .stage-character .mochi-avatar {
+    width: min(38vw, 180px);
+  }
+
+  .stage-captions,
+  .stage-recovery-card,
+  .stage-typing {
+    grid-column: 2;
+    width: 100%;
+    max-width: none;
+    margin-top: 8px;
+    margin-inline: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-captions > *,
+  .stage-typing {
+    animation: none;
+    transition: opacity 120ms linear;
+  }
+}
