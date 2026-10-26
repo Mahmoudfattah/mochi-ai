@@ -6,6 +6,7 @@ export interface AppConfig {
   accessibility: {
     characterLabel: string;
   };
+  demoMode: boolean;
   locale: string;
   quietHours: {
     start: string;
@@ -22,6 +23,7 @@ export const defaultConfig: AppConfig = {
   accessibility: {
     characterLabel: "موتشي",
   },
+  demoMode: true,
   locale: "ar-EG",
   quietHours: {
     start: "23:00",
