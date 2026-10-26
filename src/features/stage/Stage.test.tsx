@@ -45,6 +45,28 @@ describe("Stage", () => {
     expect(screen.queryByText(/المس Mochi/)).toBeNull();
   });
 
+  it("remembers entering typing from the first-visit hint", () => {
+    render(<Stage />);
+    fireEvent.click(screen.getByRole("button", { name: /أو اكتب لو مش حابب/ }));
+
+    expect(window.localStorage.getItem(ONBOARDING_STORAGE_KEY)).toBe("true");
+    expect(
+      screen.getByRole("textbox", { name: "اكتب أمرك لـ Mochi" }),
+    ).toBeTruthy();
+  });
+
+  it("opens typing from a hotkey and ignores hotkeys inside the input", () => {
+    render(<Stage />);
+    fireEvent.keyDown(window, { key: "a" });
+    const input = screen.getByRole<HTMLInputElement>("textbox", {
+      name: "اكتب أمرك لـ Mochi",
+    });
+    expect(input.value).toBe("a");
+
+    fireEvent.keyDown(input, { key: "b" });
+    expect(input.value).toBe("a");
+  });
+
   it("starts with the mic off", () => {
     render(<Stage />);
     expect(

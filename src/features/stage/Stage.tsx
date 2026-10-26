@@ -278,13 +278,14 @@ export function Stage() {
         controller.model.status.kind !== "speaking" &&
         controller.model.status.kind !== "thinking"
       ) {
+        markOnboardingComplete();
         controller.openTyping();
         setDraft(event.key);
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [controller, devEnabled]);
+  }, [controller, devEnabled, markOnboardingComplete]);
 
   useEffect(
     () => () => {
@@ -321,6 +322,7 @@ export function Stage() {
     longPressFiredRef.current = false;
     pressTimerRef.current = window.setTimeout(() => {
       longPressFiredRef.current = true;
+      markOnboardingComplete();
       controller.openTyping();
     }, TYPING_LONG_PRESS_MS);
   };
@@ -362,6 +364,7 @@ export function Stage() {
       start.y - touch.clientY >= TYPING_SWIPE_THRESHOLD_PX &&
       Math.abs(start.x - touch.clientX) < TYPING_SWIPE_THRESHOLD_PX * 2
     ) {
+      markOnboardingComplete();
       controller.openTyping();
     }
   };
@@ -424,7 +427,13 @@ export function Stage() {
                     persona_name: defaultConfig.persona.name,
                   })}
                 </p>
-                <button type="button" onClick={controller.openTyping}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    markOnboardingComplete();
+                    controller.openTyping();
+                  }}
+                >
                   {t("firstVisitTypingHint")}
                 </button>
               </div>
@@ -493,7 +502,10 @@ export function Stage() {
         </p>
 
         {controller.model.status.kind === "waitingPermission" && (
-          <section className="stage-recovery-card" role="status">
+          <section
+            className="stage-recovery-card stage-recovery-permission"
+            role="status"
+          >
             <p>{t("permissionExplanation")}</p>
           </section>
         )}
@@ -513,7 +525,7 @@ export function Stage() {
 
         {showPermissionRecovery && (
           <section
-            className="stage-recovery-card"
+            className="stage-recovery-card stage-recovery-permission"
             aria-labelledby="permission-title"
           >
             <h2 id="permission-title">{t("permissionDeniedMessage")}</h2>
@@ -535,7 +547,10 @@ export function Stage() {
         )}
 
         {showServiceRecovery && (
-          <section className="stage-recovery-card" role="status">
+          <section
+            className={`stage-recovery-card stage-recovery-${controller.model.status.kind}`}
+            role="status"
+          >
             <p>
               {t(
                 controller.model.status.kind === "error" &&
@@ -593,7 +608,10 @@ export function Stage() {
       <button
         type="button"
         className="stage-sr-only-focusable"
-        onClick={controller.openTyping}
+        onClick={() => {
+          markOnboardingComplete();
+          controller.openTyping();
+        }}
       >
         {t("continueByTyping")}
       </button>
